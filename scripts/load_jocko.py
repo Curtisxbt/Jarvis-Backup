@@ -12,9 +12,9 @@ from pathlib import Path
 
 # --- Configuration ---
 
-# Résolution du répertoire workspace (2 niveaux au-dessus de ce script)
+# Résolution du répertoire workspace (1 niveau au-dessus de ce script)
 SCRIPT_DIR = Path(__file__).resolve().parent
-WORKSPACE = SCRIPT_DIR.parent.parent  # agents/jocko/ -> agents/ -> workspace/
+WORKSPACE = SCRIPT_DIR.parent  # scripts/ -> workspace/
 
 # Dates
 TODAY = datetime.now().strftime("%Y-%m-%d")

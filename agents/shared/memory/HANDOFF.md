@@ -4,15 +4,17 @@
 Permettre la continuité entre agents avec une mémoire collective.
 
 ## Dossier collectif
-- `memory/shared/`
+- `agents/shared/memory/`
 
 ## Dossiers privés
-- Elon : `memory/elon/`
-- Jocko : `memory/jocko/`
+- Elon : `agents/elon/memory/`
+- Jocko : `agents/jocko/memory/`
+
+⛔ **INTERDIT** : ne jamais écrire dans le dossier racine `memory/`. Toujours utiliser les chemins `agents/<agent>/memory/` ci-dessus.
 
 ## Règle de handoff
 Quand un agent détecte une info utile à l'autre:
-1. écrire une note structurée dans `memory/shared/` (fichier du jour),
+1. écrire une note structurée dans `agents/shared/memory/` (fichier du jour `YYYY-MM-DD.md`),
 2. inclure: date/heure, signal, impact, action attendue, échéance,
 3. l'autre agent lit cette note au prochain passage et agit.
 

@@ -19,12 +19,12 @@ Détecte d'abord ton agent depuis les métadonnées de session (ex: `agent:main`
 
 - Si tu es **Jocko** :
   ```
-  python3 /home/jarvis/.openclaw/workspace/agents/jocko/load_jocko.py
+  python3 /home/jarvis/.openclaw/workspace/scripts/load_jocko.py
   ```
 
 - Si tu es **Elon** (ou agent par défaut / main) :
   ```
-  python3 /home/jarvis/.openclaw/workspace/agents/elon/load_elon.py
+  python3 /home/jarvis/.openclaw/workspace/scripts/load_elon.py
   ```
 
 **Procédure stricte :**
