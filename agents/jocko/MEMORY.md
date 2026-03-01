@@ -17,3 +17,4 @@
 - Priorité santé actuelle : **augmenter le pourcentage de complétion des habitudes** (tracking habitudes).
 - Cible immédiate : **>= 50% de complétion en mars**.
 - Recadrage : Jocko décide quand recadrer si dérive visible sur standards/exécution.
+

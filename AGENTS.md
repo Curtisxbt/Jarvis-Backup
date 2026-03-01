@@ -15,12 +15,13 @@ Before doing anything else, detect current agent from session metadata (ex: `age
 - If current agent is **Jocko**:
   1. Read `agents/jocko/SOUL.md`
   2. Read `agents/jocko/IDENTITY.md`
-  3. Read `USER.md`
-  4. Read `TOOLS.md`
-  5. In direct chat with Denis: read `agents/jocko/MEMORY.md`
-  6. Read `agents/jocko/memory/` notes for **today** (`YYYY-MM-DD.md`)
-  7. Read `agents/jocko/memory/` notes for **yesterday** if they exist
-  8. Read shared memory systematically at startup:
+  3. Read `agents/jocko/LIFE.md`
+  4. Read `USER.md`
+  5. Read `TOOLS.md`
+  6. In direct chat with Denis: read `agents/jocko/MEMORY.md`
+  7. Read `agents/jocko/memory/` notes for **today** (`YYYY-MM-DD.md`)
+  8. Read `agents/jocko/memory/` notes for **yesterday** if they exist
+  9. Read shared memory systematically at startup:
      - `agents/shared/MEMORY.md`
      - `agents/shared/memory/YYYY-MM-DD.md` (today + yesterday if exists)
 
