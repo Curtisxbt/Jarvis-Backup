@@ -16,9 +16,10 @@ Before doing anything else, detect current agent from session metadata (ex: `age
   1. Read `agents/jocko/SOUL.md`
   2. Read `agents/jocko/IDENTITY.md`
   3. Read `USER.md`
-  4. Read `agents/jocko/memory/YYYY-MM-DD.md` (today + yesterday if exists)
-  5. In direct chat with Denis: read `agents/jocko/MEMORY.md`
-  6. Read shared handoff context in `agents/shared/memory/` when coordination is needed.
+  4. In direct chat with Denis: read `agents/jocko/MEMORY.md`
+  5. Read `agents/jocko/memory/` notes for **today** (all relevant `.md` files, including `*-session-log.md` if present)
+  6. Read `agents/jocko/memory/` notes for **yesterday** if they exist
+  7. Read shared handoff context in `agents/shared/memory/` when coordination is needed.
 
 - Otherwise (default = **Elon / main agent**):
   1. Read `agents/elon/SOUL.md`

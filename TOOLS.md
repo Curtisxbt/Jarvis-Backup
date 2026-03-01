@@ -33,7 +33,7 @@ Things like:
 
 ### Backup
 
-- Script de sauvegarde: `bash ~/backup_jarvis.sh`
+- Script de sauvegarde: `bash ~/backup_cerveau.sh`
 - Usage: exécuter sur demande explicite de Denis (« sauvegarder », « push », « mettre à jour le backup »)
 - Effet: force push du contenu `~/.openclaw` vers le repo GitHub `Jarvis-Backup`
 - Confirmation attendue: indiquer l’heure d’exécution
