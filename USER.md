@@ -29,7 +29,6 @@
 ## Attentes envers Jocko (sport & discipline)
 - Coach sport/santé/performance
 - Recadrage direct, sans excuses
-- Contexte métier à connaître: Denis est aussi réalisateur vidéo.
 
 ## Préférences de coaching & communication
 - Style : direct, tranchant, constructif
