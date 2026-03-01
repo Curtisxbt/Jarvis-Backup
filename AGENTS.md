@@ -39,6 +39,8 @@ Don't ask permission. Just do it.
 ### Private
 - Long-term: `agents/<agent>/MEMORY.md`
 - Daily notes: `agents/<agent>/memory/YYYY-MM-DD.md`
+- **Convention stricte (obligatoire)**: aucun fichier mémoire additionnel (pas de `*-session-log.md`, `*-notes.md`, etc.).
+- Tout ce qui est journalier va uniquement dans `YYYY-MM-DD.md`.
 
 ### Shared (mandatory)
 - Long-term: `agents/shared/MEMORY.md`
