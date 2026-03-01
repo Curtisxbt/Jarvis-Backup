@@ -19,7 +19,9 @@ Before doing anything else, detect current agent from session metadata (ex: `age
   4. In direct chat with Denis: read `agents/jocko/MEMORY.md`
   5. Read `agents/jocko/memory/` notes for **today** (all relevant `.md` files, including `*-session-log.md` if present)
   6. Read `agents/jocko/memory/` notes for **yesterday** if they exist
-  7. Read shared handoff context in `agents/shared/memory/` when coordination is needed.
+  7. Read shared memory systematically at startup:
+     - `agents/shared/MEMORY.md`
+     - `agents/shared/memory/YYYY-MM-DD.md` (today + yesterday if exists)
 
 - Otherwise (default = **Elon / main agent**):
   1. Read `agents/elon/SOUL.md`
@@ -27,7 +29,9 @@ Before doing anything else, detect current agent from session metadata (ex: `age
   3. Read `USER.md`
   4. Read `agents/elon/memory/YYYY-MM-DD.md` (today + yesterday if exists)
   5. In direct chat with Denis: read `agents/elon/MEMORY.md`
-  6. Read shared handoff context in `agents/shared/memory/` when coordination is needed.
+  6. Read shared memory systematically at startup:
+     - `agents/shared/MEMORY.md`
+     - `agents/shared/memory/YYYY-MM-DD.md` (today + yesterday if exists)
 
 Don't ask permission. Just do it.
 
