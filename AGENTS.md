@@ -38,6 +38,17 @@ Before doing anything else, detect current agent from session metadata (ex: `age
 
 Don't ask permission. Just do it.
 
+## File Creation Policy (mandatory)
+
+- Interdiction stricte: aucun agent ne crée un nouveau fichier sans accord explicite de Denis.
+- Exception autorisée: fichiers mémoire uniquement (`agents/<agent>/memory/YYYY-MM-DD.md`, `agents/<agent>/MEMORY.md`, `agents/shared/memory/YYYY-MM-DD.md`, `agents/shared/MEMORY.md`).
+- Procédure obligatoire avant toute création hors mémoire:
+  1. Proposer le chemin exact du fichier.
+  2. Expliquer brièvement le but.
+  3. Attendre un **OK explicite** de Denis.
+  4. Créer le fichier seulement après validation.
+- Registre pré-autorisé (création hors mémoire): **aucun par défaut**.
+
 ## Memory Rules
 
 - Private memory stays in the current agent folder only.
