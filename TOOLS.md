@@ -38,6 +38,11 @@ Things like:
 - Effet: force push du contenu `~/.openclaw` vers le repo GitHub `Jarvis-Backup`
 - Confirmation attendue: indiquer l’heure d’exécution
 
+### Google (compte master)
+
+- Compte principal par défaut pour Docs/Drive/Sheets/Calendar: `curtismusicrec@gmail.com`
+- Sauf instruction explicite contraire de Denis, utiliser ce compte en priorité.
+
 ## Why Separate?
 
 Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
