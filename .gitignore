@@ -1,0 +1,7 @@
+*.json
+*.sqlite
+*.pem
+*.key
+*.env
+*.log
+*.ogg
