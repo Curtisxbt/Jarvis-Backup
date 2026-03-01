@@ -1,12 +1,8 @@
-# Architecture mémoire agents
+# Legacy memory folder
 
-## Collective
-- `memory/shared/` : infos inter-agents, handoff, suivis communs.
+Canonical memory location moved to `agents/`:
+- `agents/elon/memory/`
+- `agents/jocko/memory/`
+- `agents/shared/memory/`
 
-## Privée par agent
-- `memory/elon/` : notes de travail d'Elon.
-- `memory/jocko/` : notes de travail de Jocko.
-
-## Règle d'usage
-- Toute info utile à l'autre agent doit être copiée dans `memory/shared/`.
-- Les notes privées restent dans le dossier de l'agent.
+This folder is intentionally kept minimal for backward compatibility.
