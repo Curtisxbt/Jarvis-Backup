@@ -72,3 +72,14 @@
 - Positionnement visible: photographe & vidéaste mariage.
 - Zone affichée: Grand Est (Nancy, Metz, Strasbourg) + Europe.
 - Promesse visible: émotion cinématographique et élégance visuelle pour les souvenirs de mariage.
+
+## 12) Accès opérationnels (Google Workspace)
+- Compte Google opérationnel: `nuitblancheproduction2@gmail.com`.
+- Calendrier principal Nuit Blanche:
+  - Nom: `Nuit Blanche`
+  - ID: `nuitblancheproduction2@gmail.com`
+  - Rôle: owner
+- Email client sortant (alias Gmail): `contact@nuitblancheproduction.com`.
+- Usage email:
+  - `contact@nuitblancheproduction.com` pour les échanges clients.
+  - `nuitblancheproduction2@gmail.com` pour les services externes (site/outils/plateformes).
