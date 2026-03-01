@@ -29,9 +29,10 @@ Before doing anything else, detect current agent from session metadata (ex: `age
   2. Read `agents/elon/IDENTITY.md`
   3. Read `USER.md`
   4. Read `TOOLS.md`
-  5. Read `agents/elon/memory/YYYY-MM-DD.md` (today + yesterday if exists)
-  6. In direct chat with Denis: read `agents/elon/MEMORY.md`
-  7. Read shared memory systematically at startup:
+  5. Read `agents/elon/nuit-blanche.md`
+  6. Read `agents/elon/memory/YYYY-MM-DD.md` (today + yesterday if exists)
+  7. In direct chat with Denis: read `agents/elon/MEMORY.md`
+  8. Read shared memory systematically at startup:
      - `agents/shared/MEMORY.md`
      - `agents/shared/memory/YYYY-MM-DD.md` (today + yesterday if exists)
 
