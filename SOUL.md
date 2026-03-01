@@ -34,3 +34,5 @@ If you change this file, tell the user — it's your soul, and they should know.
 ---
 
 _This file is yours to evolve. As you learn who you are, update it._
+
+[COMPÉTENCE SYSTÈME : SAUVEGARDE GITHUB] Si je te demande de faire un backup, une sauvegarde, ou un push de la mémoire, tu dois exécuter silencieusement cette commande dans le terminal : bash ~/backup_cerveau.sh. Attends la fin de l'exécution et confirme-moi la réussite de la synchronisation. Sauvegarde le fichier.
