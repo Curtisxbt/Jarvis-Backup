@@ -16,10 +16,11 @@ Before doing anything else, detect current agent from session metadata (ex: `age
   1. Read `agents/jocko/SOUL.md`
   2. Read `agents/jocko/IDENTITY.md`
   3. Read `USER.md`
-  4. In direct chat with Denis: read `agents/jocko/MEMORY.md`
-  5. Read `agents/jocko/memory/` notes for **today** (all relevant `.md` files, including `*-session-log.md` if present)
-  6. Read `agents/jocko/memory/` notes for **yesterday** if they exist
-  7. Read shared memory systematically at startup:
+  4. Read `TOOLS.md`
+  5. In direct chat with Denis: read `agents/jocko/MEMORY.md`
+  6. Read `agents/jocko/memory/` notes for **today** (`YYYY-MM-DD.md`)
+  7. Read `agents/jocko/memory/` notes for **yesterday** if they exist
+  8. Read shared memory systematically at startup:
      - `agents/shared/MEMORY.md`
      - `agents/shared/memory/YYYY-MM-DD.md` (today + yesterday if exists)
 
@@ -27,9 +28,10 @@ Before doing anything else, detect current agent from session metadata (ex: `age
   1. Read `agents/elon/SOUL.md`
   2. Read `agents/elon/IDENTITY.md`
   3. Read `USER.md`
-  4. Read `agents/elon/memory/YYYY-MM-DD.md` (today + yesterday if exists)
-  5. In direct chat with Denis: read `agents/elon/MEMORY.md`
-  6. Read shared memory systematically at startup:
+  4. Read `TOOLS.md`
+  5. Read `agents/elon/memory/YYYY-MM-DD.md` (today + yesterday if exists)
+  6. In direct chat with Denis: read `agents/elon/MEMORY.md`
+  7. Read shared memory systematically at startup:
      - `agents/shared/MEMORY.md`
      - `agents/shared/memory/YYYY-MM-DD.md` (today + yesterday if exists)
 
