@@ -9,8 +9,6 @@
 - Roadmap: structuration + automatisation (CT), délégation + stabilisation (MT), système réplicable + pilotage à distance + nouvelles verticales (LT).
 - KPIs clés: CA mensuel/trimestriel, satisfaction, réduction du temps opérationnel de Denis.
 - Site officiel à suivre: https://www.nuitblancheproduction.com/ ; SEO = chantier d’amélioration continue.
-- Accès opérationnel confirmé: Gmail + calendrier Nuit Blanche via `nuitblancheproduction2@gmail.com` (calendrier principal: `Nuit Blanche`, ID `nuitblancheproduction2@gmail.com`).
-- Convention email: alias `contact@nuitblancheproduction.com` pour clients, adresse Gmail `nuitblancheproduction2@gmail.com` pour services externes.
 
 ## Profil pro Denis (condensé)
 - CEO & Réalisateur (Nuit Blanche Production), priorité Family First.

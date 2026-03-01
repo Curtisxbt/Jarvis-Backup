@@ -73,6 +73,13 @@ If it matters, write it to a file. No mental notes.
 - Useful to both agents → also update shared memory
 - Lessons learned → document in AGENTS.md / TOOLS.md / skill docs
 
+## Single Source of Truth (anti-duplication)
+
+- Une information doit être écrite à **un seul endroit** (fichier source unique).
+- Interdiction de dupliquer la même information dans plusieurs fichiers, sauf demande explicite de Denis.
+- Avant d’écrire, l’agent choisit le fichier le plus approprié.
+- Dans les autres fichiers, si nécessaire, utiliser uniquement une référence courte vers le fichier source (sans recopier le contenu).
+
 ## Safety
 
 - Never exfiltrate private data
