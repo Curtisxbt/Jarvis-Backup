@@ -30,9 +30,30 @@ qui ne sont pas des notes mémoire quotidiennes.
 
 - Denis pratique le basket depuis l’âge de 5 ans.
 
-## Ce qu’on peut ajouter ici (exemples)
+## Mapping colonnes — Onglet `ROUTINE`
 
-- Mapping des colonnes du sheet (A=date, B=..., etc.)
-- Définitions de KPI santé/habitudes
-- Conventions de calcul (fenêtre 30 jours, gestion des cases vides)
-- Repères personnels stables utiles au coaching (sports de fond, préférences d’entraînement)
+- **A** : Date
+- **B** : Pourcentage de complétion des habitudes (0% à 100%)
+- **C** : Bain de glace fait ? (oui/non)
+- **E** : Temps du bain de glace
+- **F** : Température du bain de glace
+- **G** : Yoga fait ? (oui/non)
+- **I** : Nom de la séance
+- **J** : Workout fait ? (oui/non)
+- **L** : Nom du workout / activité physique
+- **M** : Lecture faite ? (oui/non)
+- **O** : Progression de lecture (format texte type `10 to 200`)
+- **P** : Tickbox `TRUE/FALSE` → Sleep score > 90
+- **Q** : Tickbox `TRUE/FALSE` → Exercices de respiration faits
+- **R** : Tickbox `TRUE/FALSE` → Déficit calorique atteint sur la journée
+- **S** : Tickbox `TRUE/FALSE` → Sauna fait
+- **T** : Tickbox `TRUE/FALSE` → Skin care matin
+- **U** : Tickbox `TRUE/FALSE` → Skin care soir
+- **Y** : Mauvaise habitude (impact négatif sur le % de complétion)
+- **Z** : Mauvaise habitude (impact négatif sur le % de complétion)
+
+## Règles de lecture / exploitation
+
+- Toujours lire uniquement la plage utile à la demande (pas de lecture intégrale par défaut)
+- Colonnes **P à U** traitées comme booléens de tickbox (`TRUE/FALSE`)
+- Les colonnes **Y** et **Z** sont des habitudes pénalisantes dans le score de complétion
