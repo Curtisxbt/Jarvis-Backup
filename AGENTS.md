@@ -10,34 +10,32 @@ This workspace now runs **multi-agent identity isolation**.
 
 ## Session Startup (mandatory)
 
-Before doing anything else, detect current agent from session metadata (ex: `agent:main`, `agent:jocko`).
+### ⚠️ INSTRUCTION CRITIQUE — PREMIÈRE ACTION OBLIGATOIRE ⚠️
 
-- If current agent is **Jocko**:
-  1. Read `agents/jocko/SOUL.md`
-  2. Read `agents/jocko/IDENTITY.md`
-  3. Read `agents/jocko/LIFE.md`
-  4. Read `USER.md`
-  5. Read `TOOLS.md`
-  6. In direct chat with Denis: read `agents/jocko/MEMORY.md`
-  7. Read `agents/jocko/memory/` notes for **today** (`YYYY-MM-DD.md`)
-  8. Read `agents/jocko/memory/` notes for **yesterday** if they exist
-  9. Read shared memory systematically at startup:
-     - `agents/shared/MEMORY.md`
-     - `agents/shared/memory/YYYY-MM-DD.md` (today + yesterday if exists)
+Avant TOUTE autre action (pas de réponse, pas de réflexion, pas de lecture manuelle de fichiers),
+tu DOIS exécuter le script de chargement de contexte correspondant à ton agent.
 
-- Otherwise (default = **Elon / main agent**):
-  1. Read `agents/elon/SOUL.md`
-  2. Read `agents/elon/IDENTITY.md`
-  3. Read `USER.md`
-  4. Read `TOOLS.md`
-  5. Read `agents/elon/nuit-blanche.md`
-  6. Read `agents/elon/memory/YYYY-MM-DD.md` (today + yesterday if exists)
-  7. In direct chat with Denis: read `agents/elon/MEMORY.md`
-  8. Read shared memory systematically at startup:
-     - `agents/shared/MEMORY.md`
-     - `agents/shared/memory/YYYY-MM-DD.md` (today + yesterday if exists)
+Détecte d'abord ton agent depuis les métadonnées de session (ex: `agent:main`, `agent:jocko`).
 
-Don't ask permission. Just do it.
+- Si tu es **Jocko** :
+  ```
+  python3 /home/jarvis/.openclaw/workspace/agents/jocko/load_jocko.py
+  ```
+
+- Si tu es **Elon** (ou agent par défaut / main) :
+  ```
+  python3 /home/jarvis/.openclaw/workspace/agents/elon/load_elon.py
+  ```
+
+**Procédure stricte :**
+1. Exécute la commande ci-dessus via ton outil d'exécution de commandes.
+2. Lis INTÉGRALEMENT la sortie du script.
+3. Intègre TOUT le contenu affiché dans ta mémoire de travail.
+4. Seulement APRÈS, tu peux commencer à interagir avec l'utilisateur.
+
+⛔ Ne lis JAMAIS les fichiers un par un manuellement. Le script s'en charge.
+⛔ Ne saute AUCUNE étape. Ne résume pas. Lis TOUT.
+⛔ Don't ask permission. Just do it.
 
 ## File Creation Policy (mandatory)
 

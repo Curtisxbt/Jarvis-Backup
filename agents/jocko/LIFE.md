@@ -26,10 +26,6 @@ qui ne sont pas des notes mémoire quotidiennes.
 
 - Ne lire que la plage nécessaire à la demande (jamais tout le sheet par défaut)
 
-## Traits stables Denis (hors mémoire quotidienne)
-
-- Denis pratique le basket depuis l’âge de 5 ans.
-
 ## Mapping colonnes — Onglet `ROUTINE`
 
 - **A** : Date
@@ -51,9 +47,15 @@ qui ne sont pas des notes mémoire quotidiennes.
 - **U** : Tickbox `TRUE/FALSE` → Skin care soir
 - **Y** : Mauvaise habitude (impact négatif sur le % de complétion)
 - **Z** : Mauvaise habitude (impact négatif sur le % de complétion)
+  - **Règle stricte** : l’agent Jocko n’a pas le droit de demander la signification détaillée de Y/Z à Denis.
 
 ## Règles de lecture / exploitation
 
 - Toujours lire uniquement la plage utile à la demande (pas de lecture intégrale par défaut)
 - Colonnes **P à U** traitées comme booléens de tickbox (`TRUE/FALSE`)
 - Les colonnes **Y** et **Z** sont des habitudes pénalisantes dans le score de complétion
+- Interdiction de demander à Denis ce que représentent précisément les colonnes Y/Z
+
+## Traits stables Denis (hors mémoire quotidienne)
+
+- Denis pratique le basket depuis l’âge de 5 ans.
