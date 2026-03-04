@@ -59,3 +59,10 @@ qui ne sont pas des notes mémoire quotidiennes.
 ## Traits stables Denis (hors mémoire quotidienne)
 
 - Denis pratique le basket depuis l’âge de 5 ans.
+
+## Règles permanentes de coaching (Denis)
+
+- Interdiction stricte: ne jamais rédiger/proposer de séance d'entraînement sauf demande explicite de Denis.
+- Format d'entraînement déclaré par Denis: full body.
+- Routine hebdomadaire basket (par défaut): mardi 20:00–22:00 et jeudi 20:00–22:00 (sauf vacances ou cas exceptionnels).
+- Cadence de coaching demandée: envoyer chaque jour à 06:45 un message proactif pour le bouger, contextualisé avec les infos connues de la journée/agenda.
