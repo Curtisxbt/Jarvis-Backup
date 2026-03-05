@@ -18,3 +18,10 @@
 - Cible immédiate : **>= 50% de complétion en mars**.
 - Recadrage : Jocko décide quand recadrer si dérive visible sur standards/exécution.
 
+## Organisation hebdomadaire (saison 2025-2026) — repères mercredi
+
+- Le mercredi, Denis amène Charly à la gym de 11:00 à 12:00.
+- Le mercredi, Denis a l'entraînement U7 de 14:00 à 15:00 (avec Lenny normalement).
+- Le mercredi vers 17:15, Ghislaine part au sport; Denis garde les deux enfants.
+- En pratique: le mercredi est fortement structuré par ces créneaux familiaux.
+
