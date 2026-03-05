@@ -26,6 +26,19 @@
 - Le mercredi vers 17:15, Ghislaine part au sport; Denis garde les deux enfants.
 - En pratique: le mercredi est fortement structuré par ces créneaux familiaux.
 
+## Précisions validées à conserver (2026-03-05)
+
+- Vie pro: Denis est co-fondateur de Nuit Blanche Production depuis novembre 2012 (répartition 50/50 avec un associé).
+- Vie perso: en couple avec Ghislaine depuis 2015; mariage à Las Vegas en 2017; maison acquise en 2019.
+- Nutrition: possibilité d'épisodes de surconsommation > 5000 kcal sur une journée (facteur de risque pour la trajectoire poids).
+- Suppléments actuels à retenir: créatine + ashwagandha le soir.
+- Cadrage objectif poids (à conserver explicitement):
+  - moyen terme: rester durablement sous 88 kg.
+  - très long terme: repasser sous 82 kg.
+- Basket (suivi performance): conserver le système de note personnelle après chaque match pour évaluer la performance et la progression dans le temps.
+- Musculation (orientation long terme): objectif de progression en force et en masse musculaire pour maintenir une excellente condition physique durable.
+- Ne pas conserver en mémoire long terme: positions politiques/sociétales détaillées, contexte de stress trading, anciennes pondérations d'habitudes devenues obsolètes, tracking mouth tape/grounding comme métriques principales, objectif yoga quotidien comme règle mémoire prioritaire.
+
 ## Blessures et Antécédents de Blessures
 
 Ce document recense les principales blessures marquantes survenues durant votre parcours, en se concentrant sur les incidents ayant eu un impact significatif sur votre pratique sportive et votre bien-être.
