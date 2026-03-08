@@ -1,35 +1,45 @@
-import { Card } from '@/components/layout/card';
 import { PageHeader } from '@/components/layout/page-header';
-import { CronTable } from '@/components/calendar/cron-table';
+import { CronStatusCards } from '@/components/calendar/cron-status-cards';
+import { CalendarHub } from '@/components/calendar/calendar-hub';
 import { getCronJobs } from '@/lib/cron/openclaw';
+import { getTaskRelations } from '@/lib/links/resolve';
 
-export default async function CalendarPage() {
-  const jobs = await getCronJobs();
-  const daily = jobs.filter((job) => job.schedule.split(' ').length >= 5).length;
-  const healthy = jobs.filter((job) => job.lastStatus === 'ok').length;
+export default async function CalendarPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ jobId?: string }>;
+}) {
+  const params = await searchParams;
+  const [jobs, relations] = await Promise.all([getCronJobs(), getTaskRelations()]);
+
+  const linkedTasks = Object.fromEntries(
+    jobs.map((job) => [
+      job.id,
+      (relations.tasksByCronId.get(job.id) || []).map((task) => ({
+        id: task.id,
+        label: task.title,
+        meta: `${task.owner} · ${task.category}`,
+        href: `/tasks?taskId=${encodeURIComponent(task.id)}`,
+      })),
+    ]),
+  );
 
   return (
     <>
       <PageHeader
-        title="Calendar"
-        description="Operational view of OpenClaw cron jobs, cadence, and automation status."
+        title="Calendrier"
+        description="Vue opérationnelle des jobs cron OpenClaw, de leur cadence et de leur état d’automatisation."
       />
-      <div className="grid cols-3">
-        <Card>
-          <div className="muted">Active jobs</div>
-          <div className="kpi">{jobs.length}</div>
-        </Card>
-        <Card>
-          <div className="muted">Healthy last runs</div>
-          <div className="kpi">{healthy}</div>
-        </Card>
-        <Card>
-          <div className="muted">Scheduled jobs</div>
-          <div className="kpi">{daily}</div>
-        </Card>
-      </div>
+      <CronStatusCards
+        total={jobs.length}
+        healthy={jobs.filter((job) => job.lastStatus === 'ok').length}
+        today={jobs.filter((job) => job.timingBucket === 'today').length}
+        tomorrow={jobs.filter((job) => job.timingBucket === 'tomorrow').length}
+        later={jobs.filter((job) => job.timingBucket === 'later').length}
+        unknown={jobs.filter((job) => job.timingBucket === 'unknown').length}
+      />
       <div style={{ marginTop: 18 }}>
-        <CronTable jobs={jobs} />
+        <CalendarHub jobs={jobs} linkedTasks={linkedTasks} focusJobId={params.jobId} />
       </div>
     </>
   );

@@ -5,12 +5,12 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 
 const items = [
-  { href: '/', label: 'Overview' },
-  { href: '/tasks', label: 'Tasks' },
-  { href: '/calendar', label: 'Calendar' },
-  { href: '/memory', label: 'Memory' },
-  { href: '/team', label: 'Team' },
-  { href: '/office', label: 'Office' },
+  { href: '/', label: 'Vue d’ensemble' },
+  { href: '/tasks', label: 'Tâches' },
+  { href: '/calendar', label: 'Calendrier' },
+  { href: '/memory', label: 'Mémoire' },
+  { href: '/team', label: 'Équipe' },
+  { href: '/office', label: 'Bureau' },
 ] as const;
 
 export function Sidebar() {
@@ -19,7 +19,7 @@ export function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="brand">Mission Control</div>
-      <div className="brand-sub">OpenClaw operating layer for Denis</div>
+      <div className="brand-sub">Couche de pilotage OpenClaw pour Denis</div>
       <nav className="nav">
         {items.map((item) => {
           const active = pathname === item.href;

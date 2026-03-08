@@ -4,7 +4,7 @@ import { Sidebar } from '@/components/layout/sidebar';
 
 export const metadata = {
   title: 'Mission Control',
-  description: 'OpenClaw mission control for Denis',
+  description: 'Mission Control OpenClaw pour Denis',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

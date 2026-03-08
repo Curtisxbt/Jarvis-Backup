@@ -3,17 +3,17 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const agents = [
-  { value: '', label: 'All agents' },
+  { value: '', label: 'Tous les agents' },
   { value: 'elon', label: 'Elon' },
   { value: 'jocko', label: 'Jocko' },
-  { value: 'shared', label: 'Shared' },
+  { value: 'shared', label: 'Partagé' },
 ];
 
 const kinds = [
-  { value: '', label: 'All memory types' },
-  { value: 'daily', label: 'Daily' },
+  { value: '', label: 'Tous les types de mémoire' },
+  { value: 'daily', label: 'Quotidienne' },
   { value: 'durable', label: 'Durable' },
-  { value: 'handoff', label: 'Handoff' },
+  { value: 'handoff', label: 'Passation' },
 ];
 
 export function MemoryFilters() {
@@ -31,7 +31,7 @@ export function MemoryFilters() {
   return (
     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
       <input
-        placeholder="Search memory"
+        placeholder="Rechercher dans la mémoire"
         defaultValue={searchParams.get('q') ?? ''}
         onKeyDown={(event) => {
           if (event.key !== 'Enter') return;

@@ -1,30 +1,57 @@
 import { Card } from '@/components/layout/card';
 import { PageHeader } from '@/components/layout/page-header';
-import { TeamGrid } from '@/components/team/team-grid';
+import { TeamSummary } from '@/components/team/team-summary';
 import { getAgentProfiles } from '@/lib/agents/registry';
+import { getTasks } from '@/lib/tasks/store';
+import { getCronJobs } from '@/lib/cron/openclaw';
+import { getMemoryDocuments } from '@/lib/memory/scan';
+import { findAgentRuntime, formatAge, getRuntimeSignal } from '@/lib/agents/runtime';
 
-export default function TeamPage() {
-  const team = getAgentProfiles();
+export default async function TeamPage() {
+  const [team, tasks, cronJobs, memoryDocs, runtime] = await Promise.all([
+    Promise.resolve(getAgentProfiles()),
+    getTasks(),
+    getCronJobs(),
+    getMemoryDocuments(),
+    getRuntimeSignal(),
+  ]);
+
+  const summary = team.map((member) => {
+    const agentRuntime = findAgentRuntime(runtime, member.id);
+    return {
+      id: member.id,
+      name: member.name,
+      role: `${member.role}${agentRuntime?.sessionsCount ? ` · ${agentRuntime.sessionsCount} sessions` : ''}`,
+      status: member.status,
+      openTasks: tasks.filter((task) => task.owner === member.name && task.status !== 'done').length,
+      blockedTasks: tasks.filter((task) => task.owner === member.name && task.status === 'blocked').length,
+      cronCount: cronJobs.filter((job) => (job.agentId || '').toLowerCase() === member.id).length,
+      latestMemory: memoryDocs.find((doc) => doc.agent === member.id)?.title,
+      sessionAge: formatAge(agentRuntime?.lastActiveAgeMs),
+      lastModel: agentRuntime?.lastModel,
+      contextUsage: agentRuntime?.recentPercentUsed,
+    };
+  });
 
   return (
     <>
-      <PageHeader title="Team" description="Roles, responsibilities, and operating posture across the human + agent org." />
+      <PageHeader title="Équipe" description="Rôles, responsabilités, charge, sessions, modèle et posture opérationnelle à travers l’organisation humain + agents." />
       <div className="grid cols-3">
         <Card>
-          <div className="muted">Active members</div>
+          <div className="muted">Membres actifs</div>
           <div className="kpi">{team.length}</div>
         </Card>
         <Card>
-          <div className="muted">Working now</div>
-          <div className="kpi">{team.filter((member) => member.status === 'working').length}</div>
+          <div className="muted">Sessions actives</div>
+          <div className="kpi">{runtime.activeSessions}</div>
         </Card>
         <Card>
-          <div className="muted">Scheduled</div>
-          <div className="kpi">{team.filter((member) => member.status === 'scheduled').length}</div>
+          <div className="muted">Gateway</div>
+          <div className="kpi">{runtime.gatewayReachable ? 'OK' : 'DOWN'}</div>
         </Card>
       </div>
       <div style={{ marginTop: 18 }}>
-        <TeamGrid team={team} />
+        <TeamSummary items={summary} />
       </div>
     </>
   );

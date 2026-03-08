@@ -19,7 +19,7 @@ export function OfficeGrid({ seats }: { seats: OfficeSeat[] }) {
         <section key={seat.id} className="card" style={{ minHeight: 240 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3>{seat.label}</h3>
-            <span className="badge">{seat.status}</span>
+            <span className="badge">{translateStatus(seat.status)}</span>
           </div>
           <div style={{ display: 'grid', placeItems: 'center', minHeight: 150 }}>
             <div style={{ position: 'relative', width: 140, height: 110 }}>
@@ -34,4 +34,12 @@ export function OfficeGrid({ seats }: { seats: OfficeSeat[] }) {
       ))}
     </div>
   );
+}
+
+function translateStatus(status: string) {
+  if (status === 'working') return 'en activité';
+  if (status === 'scheduled') return 'planifié';
+  if (status === 'blocked') return 'bloqué';
+  if (status === 'idle') return 'inactif';
+  return status;
 }

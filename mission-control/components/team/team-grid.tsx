@@ -8,7 +8,7 @@ export function TeamGrid({ team }: { team: AgentProfile[] }) {
         <Card key={member.id}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
             <h3>{member.name}</h3>
-            <span className="badge">{member.status}</span>
+            <span className="badge">{translateStatus(member.status)}</span>
           </div>
           <div className="muted" style={{ marginBottom: 10 }}>{member.role}</div>
           <p>{member.mission}</p>
@@ -17,4 +17,13 @@ export function TeamGrid({ team }: { team: AgentProfile[] }) {
       ))}
     </div>
   );
+}
+
+function translateStatus(status: string) {
+  if (status === 'working') return 'en activité';
+  if (status === 'scheduled') return 'planifié';
+  if (status === 'online') return 'en ligne';
+  if (status === 'blocked') return 'bloqué';
+  if (status === 'idle') return 'inactif';
+  return status;
 }

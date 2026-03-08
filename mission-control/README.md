@@ -1,15 +1,15 @@
 # Mission Control
 
-Local-first OpenClaw dashboard for Denis.
+Tableau de bord OpenClaw local-first pour Denis.
 
 ## Modules
-- Tasks board
-- Calendar / cron visibility
-- Memory explorer + search
-- Team map
-- Office activity view
+- Tableau des tâches
+- Calendrier / visibilité cron
+- Explorateur mémoire + recherche
+- Cartographie de l’équipe
+- Vue d’activité du bureau
 
-## Run
+## Lancer
 ```bash
 npm install
 npm run dev

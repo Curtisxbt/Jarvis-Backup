@@ -1,60 +1,67 @@
-import { Card } from '@/components/layout/card';
 import { PageHeader } from '@/components/layout/page-header';
+import { OverviewKpis } from '@/components/overview/overview-kpis';
+import { RecentMemory } from '@/components/overview/recent-memory';
+import { AgentActivity } from '@/components/overview/agent-activity';
+import { QuickActions } from '@/components/overview/quick-actions';
+import { AlertsPanel } from '@/components/overview/alerts-panel';
+import { getTasks } from '@/lib/tasks/store';
+import { getCronJobs } from '@/lib/cron/openclaw';
+import { getMemoryDocuments } from '@/lib/memory/scan';
+import { getAgentProfiles } from '@/lib/agents/registry';
+import { getTaskRelations } from '@/lib/links/resolve';
+import { getRuntimeSignal } from '@/lib/agents/runtime';
+import { buildAlerts } from '@/lib/alerts/engine';
 
-const modules = [
-  {
-    title: 'Tasks',
-    description: 'Pilot every task across Denis, Elon, Jocko, and future subagents.',
-  },
-  {
-    title: 'Calendar',
-    description: 'View cron jobs, planned runs, and operational cadence in one place.',
-  },
-  {
-    title: 'Memory',
-    description: 'Search and inspect daily logs and durable memories without digging through markdown manually.',
-  },
-  {
-    title: 'Team',
-    description: 'See agent roles, responsibilities, and current operating posture.',
-  },
-  {
-    title: 'Office',
-    description: 'Visual live-status layer for who is idle, working, scheduled, or blocked.',
-  },
-];
+export default async function HomePage() {
+  const [tasks, cronJobs, memoryDocs, relations, runtime] = await Promise.all([
+    getTasks(),
+    getCronJobs(),
+    getMemoryDocuments(),
+    getTaskRelations(),
+    getRuntimeSignal(),
+  ]);
+  const team = getAgentProfiles();
 
-export default function HomePage() {
+  const recentMemories = memoryDocs.slice(0, 5).map((doc) => ({
+    ...doc,
+    href: `/memory?docId=${encodeURIComponent(doc.id)}`,
+  }));
+  const activeAgents = team.filter((member) => member.status === 'working' || member.status === 'online').length;
+  const todaysElonMemory = memoryDocs.some((doc) => doc.agent === 'elon' && doc.kind === 'daily' && doc.date === new Date().toISOString().slice(0, 10));
+  const orphanCrons = cronJobs.filter((job) => !(relations.tasksByCronId.get(job.id) || []).length);
+
+  const alerts = buildAlerts({
+    tasks,
+    cronJobs,
+    todaysElonMemory,
+    orphanCronCount: orphanCrons.length,
+    runtime,
+  });
+
   return (
     <>
       <PageHeader
         title="Mission Control"
-        description="One operating surface for execution, memory, automation, and agent visibility."
+        description="Une seule surface de pilotage pour l’exécution, la mémoire, l’automatisation et la visibilité des agents."
       />
-      <div className="grid cols-3">
-        <Card>
-          <div className="muted">System status</div>
-          <div className="kpi">Bootstrapped</div>
-          <p className="muted">Foundation is live. Feature modules plug into this shell next.</p>
-        </Card>
-        <Card>
-          <div className="muted">Primary focus</div>
-          <div className="kpi">Operational clarity</div>
-          <p className="muted">The app is designed to reduce hidden state: tasks, cron, memory, and agents become visible.</p>
-        </Card>
-        <Card>
-          <div className="muted">Build mode</div>
-          <div className="kpi">Local-first</div>
-          <p className="muted">The first version prioritizes reliability, file access, and speed over flashy abstractions.</p>
-        </Card>
-      </div>
+
+      <OverviewKpis
+        openTasks={tasks.filter((task) => task.status !== 'done').length}
+        blockedTasks={tasks.filter((task) => task.status === 'blocked').length}
+        activeCronJobs={cronJobs.length}
+        cronHealthy={cronJobs.filter((job) => job.lastStatus === 'ok').length}
+        recentMemories={recentMemories.length}
+        activeAgents={activeAgents}
+      />
+
       <div className="grid cols-2" style={{ marginTop: 18 }}>
-        {modules.map((module) => (
-          <Card key={module.title}>
-            <h3>{module.title}</h3>
-            <p className="muted">{module.description}</p>
-          </Card>
-        ))}
+        <AlertsPanel alerts={alerts} />
+        <RecentMemory docs={recentMemories} />
+      </div>
+
+      <div className="grid cols-2" style={{ marginTop: 18 }}>
+        <AgentActivity team={team} />
+        <QuickActions />
       </div>
     </>
   );
