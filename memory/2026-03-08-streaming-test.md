@@ -1,4 +1,87 @@
-# 2026-03-08
+# Session: 2026-03-08 17:40:47 UTC
+
+- **Session Key**: agent:main:main
+- **Session ID**: 5b9cfa2c-12aa-4b35-bb9c-27da76a1dee4
+- **Source**: telegram
+
+## Conversation Summary
+
+user: Conversation info (untrusted metadata):
+```json
+{
+  "message_id": "1623",
+  "sender_id": "433736251",
+  "sender": "Curtis_XBT",
+  "timestamp": "Sun 2026-03-08 18:32 GMT+1"
+}
+```
+
+Sender (untrusted metadata):
+```json
+{
+  "label": "Curtis_XBT (433736251)",
+  "id": "433736251",
+  "name": "Curtis_XBT",
+  "username": "Curtis_Xbt"
+}
+```
+
+Ouais applique
+assistant: Je remets uniquement la première version propre des réglages streaming/block, puis je relance le gateway.
+user: Conversation info (untrusted metadata):
+```json
+{
+  "message_id": "1624",
+  "sender_id": "433736251",
+  "sender": "Curtis_XBT",
+  "timestamp": "Sun 2026-03-08 18:35 GMT+1"
+}
+```
+
+Sender (untrusted metadata):
+```json
+{
+  "label": "Curtis_XBT (433736251)",
+  "id": "433736251",
+  "name": "Curtis_XBT",
+  "username": "Curtis_Xbt"
+}
+```
+
+C’est comment
+assistant: [[reply_to_current]] C’est remis.
+
+J’ai réappliqué la **première version propre** :
+- block streaming activé côté agent,
+- Telegram en `streaming: partial`,
+- `blockStreaming: true`,
+- chunk/coalesce en version modérée.
+
+Le restart gateway a été relancé derrière.  
+Donc on est revenu au **premier setup de test**, pas au réglage agressif d’après.
+user: Conversation info (untrusted metadata):
+```json
+{
+  "message_id": "1626",
+  "sender_id": "433736251",
+  "sender": "Curtis_XBT",
+  "timestamp": "Sun 2026-03-08 18:36 GMT+1"
+}
+```
+
+Sender (untrusted metadata):
+```json
+{
+  "label": "Curtis_XBT (433736251)",
+  "id": "433736251",
+  "name": "Curtis_XBT",
+  "username": "Curtis_Xbt"
+}
+```
+
+Fait moi un gros message pour voir, genre copie moi le contenu de la memoire du jour
+assistant: Je fais un vrai test long en prenant le contenu de la mémoire du jour, pour voir si ça sort en plusieurs blocs ou pas.
+assistant: [[reply_to_current]] # 2026-03-08
 
 - Mise à jour OpenClaw effectuée vers `2026.3.7` ; gateway redémarré avec succès et runtime confirmé actif.
 - Après update, test isolé subagent sur `openai-codex/gpt-5.4` avec tâche `Réponds exactement MODEL_OK.` : succès (`MODEL_OK`). Conclusion : GPT-5.4 est désormais accepté par le runtime.
@@ -30,18 +113,128 @@
 - Correctif appliqué pour le problème de rendu : kill du vieux process `next-server`, redémarrage propre du bon build sur `127.0.0.1:3005`, vérification explicite que le CSS actuel répondait bien en `200 OK`, puis nouvelle capture de la home stockée dans `mission-control/screens/home-fixed.png` et envoyée sur Telegram à Denis.
 - Dossier de captures créé pour Mission Control : `/home/jarvis/.openclaw/workspace/mission-control/screens/` avec au moins `home.png`, `tasks.png`, `calendar.png`, `memory.png`, `team.png`, `office.png`, puis `home-fixed.png` pour la vraie home corrigée.
 - Décision stratégique finale avec Denis : arrêter les gros sprints Mission Control à ce stade ; un éventuel Sprint 9 ne serait plus nécessaire pour la v1 et relèverait plutôt d’une v2 ou d’un raffinement optionnel.
-- Point de reprise validé avec Denis : revenir juste après sur la mise à disposition de Mission Control sur un autre appareil, avec pistes déjà identifiées autour d’un accès LAN ou via Tailscale sur la machine hôte `jarvis`.
-- Sprint 9 Mission Control lancé puis livré : fondation live minimale viable sans création de nouveaux fichiers hors règle, via extension de `app/api/team/route.ts` en flux SSE (`?stream=1`) produisant un snapshot digesté (tâches, cron, mémoire récente, runtime) et ajout dans `app/layout.tsx` d’un runtime client léger qui se connecte au flux, affiche un badge `Live` persistant et recharge automatiquement `/`, `/team`, `/calendar` et `/office` lorsqu’un changement réel est détecté.
-- Vérification Sprint 9 effectuée avec succès sur la codebase Mission Control : `npm run typecheck` OK puis `npm run build` OK sur Next.js, donc la fondation live intégrée compile proprement.
-- Sprint 10 Mission Control livré : enrichissement profond des diagnostics runtime et cron sans nouveaux fichiers, avec extension de `lib/agents/runtime.ts` (santé `ok/attention/critique`, libellés, issues par agent, santé globale runtime) et de `lib/cron/openclaw.ts` (comptes succès/échecs récents, santé cron, raisons de santé, lecture plus utile de la durée).
-- Côté UI Sprint 10 : `app/team/page.tsx`, `app/office/page.tsx`, `components/team/team-summary.tsx`, `components/office/office-radar.tsx`, `components/calendar/cron-status-cards.tsx`, `components/calendar/cron-table.tsx`, `components/calendar/cron-agenda.tsx`, `components/calendar/cron-run-history.tsx` et `lib/alerts/engine.ts` ont été mis à jour pour afficher santé runtime, signaux faibles, criticité cron, ratios OK/KO et raisons diagnostics directement dans Équipe, Bureau, Calendrier et Alertes.
-- Vérification Sprint 10 effectuée avec succès : après correction d’un typage implicite TypeScript sur `runtime.ts`, `npm run typecheck` OK et `npm run build` OK.
-- Sprint 13 Mission Control livré : couche d’opérabilité renforcée sans nouveaux fichiers, via extension de `components/actions/quick-task-button.tsx` (labels personnalisables, état erreur, usage plus flexible), refonte de `components/overview/quick-actions.tsx` vers des interventions réelles (blocages, cron, agents, mémoire + création immédiate de tâches de déblocage/revue système), enrichissement de `components/overview/alerts-panel.tsx` avec création de suivi directement depuis chaque alerte, et ajout d’actions contextuelles supplémentaires dans `components/team/team-summary.tsx` et `components/office/office-radar.tsx` pour créer des revues runtime ou interventions poste sans navigation inutile.
-- Vérification Sprint 13 effectuée avec succès : `npm run typecheck` OK puis `npm run build` OK.
-- Refonte design majeure de la page Bureau engagée puis livrée dans les fichiers existants sans nouveaux assets : `app/office/page.tsx` mappe désormais un `visualState` métier (`working`, `scheduled`, `online`, `idle`, `meditation`, `critical`) à partir des vraies données runtime/cron/tâches, et `components/office/office-radar.tsx` a été transformé en scène top-down rétro avec salle Elon, hub central et salle Jocko ; Jocko bascule explicitement en mode salle méditation/yoga quand il est idle, avec lecture visuelle dédiée.
-- `styles/globals.css` a été enrichi massivement pour supporter le nouveau Bureau façon mini-jeu rétro (pièces, parquet, bureau, écrans, plantes, halo agents, hub, HUD, yoga mat, respiration animée, badges visuels, version responsive et reduced-motion), tout en gardant les inspecteurs/action buttons branchés aux vraies données et aux actions existantes.
-- Vérification de la refonte Bureau effectuée avec succès : `npm run typecheck` OK puis `npm run build` OK.
-- Après première capture de la nouvelle page Bureau, Denis a validé la direction mais a jugé le rendu encore insuffisamment “petit jeu Game Boy” ; demande explicite supplémentaire : les agents doivent devenir de vrais petits personnages, et Jocko doit avoir une vraie salle méditation/yoga quand il est idle.
-- Itération Bureau V2.1 livrée immédiatement après : `components/office/office-radar.tsx` a été retravaillé pour remplacer les pastilles/icônes par de petits personnages stylisés en CSS (Elon, Jocko, Core), enrichir le hub avec racks serveurs et rendre les pièces plus incarnées ; `styles/globals.css` a été encore enrichi avec un système `office-character*` (tête, torse, bras, jambes, accessoires, ombre, aura, variantes meditation/core/laptop/band/zen), tout en gardant la scène top-down et les vraies données branchées.
-- Nouvelle capture Bureau V2.1 effectuée avec succès après relance propre de `next start` sur `127.0.0.1:3005` ; la première tentative de capture avait échoué sur `ERR_CONNECTION_REFUSED`, corrigé en redémarrant le serveur local avant de reprendre la capture. Denis a confirmé que cette V2.1 est meilleure et plus proche du rendu souhaité, tout en considérant qu’il reste encore du polish pour atteindre pleinement le style “Game Boy / mini jeu premium”.
-- Vérification V2.1 Bureau effectuée avec succès : `npm run typecheck` OK puis `npm run build` OK après remplacement des icônes par de vrais petits personnages CSS.
+user: Conversation info (untrusted metadata):
+```json
+{
+  "message_id": "1649",
+  "sender_id": "433736251",
+  "sender": "Curtis_XBT",
+  "timestamp": "Sun 2026-03-08 18:38 GMT+1"
+}
+```
+
+Sender (untrusted metadata):
+```json
+{
+  "label": "Curtis_XBT (433736251)",
+  "id": "433736251",
+  "name": "Curtis_XBT",
+  "username": "Curtis_Xbt"
+}
+```
+
+Mais ça va pas. Je reçoit plein de petits messages, au lieu de 2-3 gros seulement. Pourquoi ?
+
+Par exemple je recoit ça :
+
+capture de la home stockée dans mission-control/screens/home-fixed.png et envoyée sur Telegram à Denis.
+
+• Dossier de captures créé pour Mission Control : /home/jarvis/.openclaw/workspace/mission-control/screens/ avec
+assistant: [[reply_to_current]] Parce que le block streaming est bien en train de marcher… mais avec un découpage trop agressif.
+
+Concrètement :
+- OpenClaw coupe la réponse dès qu’un bloc atteint le seuil configuré ;
+- avec les réglages actuels, il autorise des envois intermédiaires trop tôt ;
+- donc au lieu d’attendre 2–3 gros paquets, il envoie plusieurs fragments moyens/petits.
+
+En clair :  
+on a débloqué le “temps réel”, mais le **chunking est mal réglé**.
+
+Ce qu’il faut faire maintenant :
+- **augmenter la taille minimale des blocs**,
+- **augmenter un peu le coalescing**,
+- garder le streaming actif,
+- pour obtenir 2–3 gros messages au lieu d’une pluie de morceaux.
+user: Conversation info (untrusted metadata):
+```json
+{
+  "message_id": "1652",
+  "sender_id": "433736251",
+  "sender": "Curtis_XBT",
+  "timestamp": "Sun 2026-03-08 18:39 GMT+1"
+}
+```
+
+Sender (untrusted metadata):
+```json
+{
+  "label": "Curtis_XBT (433736251)",
+  "id": "433736251",
+  "name": "Curtis_XBT",
+  "username": "Curtis_Xbt"
+}
+```
+
+C’est nos dernières modifs qui ont fait ça?
+assistant: [[reply_to_current]] Oui.
+
+C’est précisément le retour du **premier réglage streaming/block** qu’on vient de remettre qui a provoqué ça :
+- `streaming: partial`
+- `blockStreaming: true`
+- `blockStreamingDefault: on`
+- chunk/coalesce modérés
+
+Donc :
+- avant, tout était fusionné en un seul message final ;
+- maintenant, ça part bien en live ;
+- mais le découpage actuel est encore trop fin pour ton usage Telegram.
+user: Conversation info (untrusted metadata):
+```json
+{
+  "message_id": "1654",
+  "sender_id": "433736251",
+  "sender": "Curtis_XBT",
+  "timestamp": "Sun 2026-03-08 18:39 GMT+1"
+}
+```
+
+Sender (untrusted metadata):
+```json
+{
+  "label": "Curtis_XBT (433736251)",
+  "id": "433736251",
+  "name": "Curtis_XBT",
+  "username": "Curtis_Xbt"
+}
+```
+
+Vazy vire tout. On annule tout revient comme avant
+assistant: Je remets tout comme avant, sans garder le streaming ni le block découpage. Ensuite je te confirme proprement que c’est revenu à l’état initial.
+user: Conversation info (untrusted metadata):
+```json
+{
+  "message_id": "1656",
+  "sender_id": "433736251",
+  "sender": "Curtis_XBT",
+  "timestamp": "Sun 2026-03-08 18:40 GMT+1"
+}
+```
+
+Sender (untrusted metadata):
+```json
+{
+  "label": "Curtis_XBT (433736251)",
+  "id": "433736251",
+  "name": "Curtis_XBT",
+  "username": "Curtis_Xbt"
+}
+```
+
+Donc on est exactement comme après qu’on ai changé le mission control en blanc?
+assistant: [[reply_to_current]] Oui. C’est l’objectif, et côté config j’ai bien remis cet état-là :
+
+- plus de `blockStreaming*` côté agent,
+- Telegram revenu à `streaming: off`,
+- plus de `blockStreaming: true`.
+
+Donc on est revenu au comportement d’avant les tests sur le streaming Telegram — en gros l’état où on était après le passage de Mission Control en clair, avant qu’on commence ce chantier-là.

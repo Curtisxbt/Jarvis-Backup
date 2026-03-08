@@ -7,6 +7,8 @@ export function CronStatusCards({
   tomorrow,
   later,
   unknown,
+  warning,
+  danger,
 }: {
   total: number;
   healthy: number;
@@ -14,10 +16,14 @@ export function CronStatusCards({
   tomorrow: number;
   later: number;
   unknown: number;
+  warning: number;
+  danger: number;
 }) {
   const items = [
     { label: 'Jobs actifs', value: total },
     { label: 'Derniers runs sains', value: healthy },
+    { label: 'Attention', value: warning },
+    { label: 'Critiques', value: danger },
     { label: 'Aujourd’hui', value: today },
     { label: 'Demain', value: tomorrow },
     { label: 'Plus tard', value: later + unknown },

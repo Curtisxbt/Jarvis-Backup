@@ -14,6 +14,8 @@ type TeamSummaryItem = {
   sessionAge?: string;
   lastModel?: string;
   contextUsage?: number | null;
+  runtimeHealth?: string;
+  runtimeIssues?: string[];
 };
 
 export function TeamSummary({ items }: { items: TeamSummaryItem[] }) {
@@ -34,14 +36,25 @@ export function TeamSummary({ items }: { items: TeamSummaryItem[] }) {
             <div className="muted">Dernière activité : <strong style={{ color: 'var(--text)' }}>{item.sessionAge || 'inconnue'}</strong></div>
             <div className="muted">Modèle : <strong style={{ color: 'var(--text)' }}>{item.lastModel || 'inconnu'}</strong></div>
             <div className="muted">Contexte : <strong style={{ color: 'var(--text)' }}>{item.contextUsage != null ? `${item.contextUsage}%` : 'n/d'}</strong></div>
+            <div className="muted">Santé runtime : <strong style={{ color: 'var(--text)' }}>{item.runtimeHealth || 'inconnue'}</strong></div>
+            {item.runtimeIssues?.length ? <div className="muted">Signaux : <strong style={{ color: 'var(--text)' }}>{item.runtimeIssues.join(' · ')}</strong></div> : null}
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
             <Link href={`/tasks?owner=${encodeURIComponent(item.name)}`} className="badge badge-link">Tâches</Link>
             <Link href={`/memory?agent=${encodeURIComponent(item.id)}`} className="badge badge-link">Mémoire</Link>
             <Link href="/calendar" className="badge badge-link">Cron</Link>
+            <Link href="/team" className="badge badge-link">Diagnostic</Link>
           </div>
-          <div style={{ marginTop: 12 }}>
+          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <QuickTaskButton title={`Action ${item.name}`} description={`Suivi agent ${item.name}`} owner={item.name} />
+            <QuickTaskButton
+              title={`Revue runtime ${item.name}`}
+              description={`Contrôle rapide runtime pour ${item.name}.`}
+              owner={item.name}
+              label="Créer une revue runtime"
+              doneLabel="Revue créée"
+              className="action-button secondary-button"
+            />
           </div>
         </Card>
       ))}

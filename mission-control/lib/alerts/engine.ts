@@ -28,7 +28,7 @@ export function buildAlerts({
   runtime: RuntimeSignal;
 }): AlertItem[] {
   const blockedTasks = tasks.filter((task) => task.status === 'blocked');
-  const noisyCrons = cronJobs.filter((job) => job.lastStatus && job.lastStatus !== 'ok');
+  const noisyCrons = cronJobs.filter((job) => job.health !== 'ok');
   const alerts: AlertItem[] = [];
   const mainRuntime = findAgentRuntime(runtime, 'main');
 
@@ -45,13 +45,16 @@ export function buildAlerts({
   }
 
   if (noisyCrons.length) {
+    const criticalCrons = noisyCrons.filter((job) => job.health === 'danger').length;
     alerts.push({
-      level: 'warning',
-      label: 'Cron en attente ou en erreur',
-      detail: `${noisyCrons.length} job(s) demandent une vérification.`,
+      level: criticalCrons ? 'danger' : 'warning',
+      label: criticalCrons ? 'Cron critiques détectés' : 'Cron en attention',
+      detail: criticalCrons
+        ? `${criticalCrons} job(s) cron sont en état critique.`
+        : `${noisyCrons.length} job(s) cron demandent une vérification.`,
       href: '/calendar',
       cta: 'Vérifier les cron',
-      score: 80,
+      score: criticalCrons ? 95 : 80,
       category: 'Automatisation',
     });
   }

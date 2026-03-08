@@ -11,14 +11,36 @@ export default async function OfficePage() {
   const [tasks, cronJobs, memoryDocs, runtime] = await Promise.all([getTasks(), getCronJobs(), getMemoryDocuments(), getRuntimeSignal()]);
   const seats = (office as Array<{ id: string; agentId: string; label: string; status: string }>).map((seat) => {
     const agentRuntime = findAgentRuntime(runtime, seat.agentId);
+    const matchingCron = cronJobs.find((job) => (job.agentId || '').toLowerCase() === seat.agentId);
+    const hasBlockedTasks = tasks.some((task) => task.owner.toLowerCase() === seat.agentId && task.status === 'blocked');
+    const visualState = !runtime.gatewayReachable
+      ? 'critical'
+      : hasBlockedTasks || agentRuntime?.health === 'danger' || matchingCron?.health === 'danger'
+        ? 'critical'
+        : seat.agentId === 'jocko' && seat.status === 'idle'
+          ? 'meditation'
+          : seat.status === 'working'
+            ? 'working'
+            : seat.status === 'scheduled'
+              ? 'scheduled'
+              : seat.status === 'online'
+                ? 'online'
+                : 'idle';
+
     return {
       ...seat,
       status: runtime.gatewayReachable ? seat.status : 'blocked',
+      visualState,
       openTasks: tasks.filter((task) => task.owner.toLowerCase() === seat.agentId && task.status !== 'done').length,
-      nextCron: cronJobs.find((job) => (job.agentId || '').toLowerCase() === seat.agentId)?.name,
+      blockedTasks: tasks.filter((task) => task.owner.toLowerCase() === seat.agentId && task.status === 'blocked').length,
+      nextCron: matchingCron?.name,
       latestMemory: memoryDocs.find((doc) => doc.agent === seat.agentId)?.title,
       sessionAge: formatAge(agentRuntime?.lastActiveAgeMs),
       lastModel: agentRuntime?.lastModel,
+      runtimeHealth: agentRuntime?.healthLabel,
+      runtimeIssues: agentRuntime?.issues,
+      cronHealth: matchingCron?.healthLabel,
+      cronIssues: matchingCron?.healthReasons,
     };
   });
 
@@ -37,6 +59,7 @@ export default async function OfficePage() {
         <Card>
           <div className="muted">Gateway</div>
           <div className="kpi">{runtime.gatewayReachable ? 'OK' : 'DOWN'}</div>
+          <div className="muted">Santé globale : <strong style={{ color: 'var(--text)' }}>{runtime.healthLabel}</strong></div>
         </Card>
       </div>
       <div style={{ marginTop: 18 }}>

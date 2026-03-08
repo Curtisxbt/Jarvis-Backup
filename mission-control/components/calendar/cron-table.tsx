@@ -21,6 +21,7 @@ export function CronTable({ jobs, linkedTasks = {}, focusJobId }: { jobs: CronJo
             <th>Prochain run</th>
             <th>Dernier run</th>
             <th>État</th>
+            <th>Santé</th>
           </tr>
         </thead>
         <tbody>
@@ -45,9 +46,14 @@ export function CronTable({ jobs, linkedTasks = {}, focusJobId }: { jobs: CronJo
               <td>{job.nextRunAt ? new Date(job.nextRunAt).toLocaleString('fr-FR') : '—'}</td>
               <td>
                 {job.lastRunAt ? new Date(job.lastRunAt).toLocaleString('fr-FR') : '—'}
-                {job.lastDurationMs ? <div className="muted code">{job.lastDurationMs} ms</div> : null}
+                {job.lastDurationMs ? <div className="muted code">{formatDuration(job.lastDurationMs)}</div> : null}
+                <div className="muted code">OK {job.successCount} · KO {job.failureCount}</div>
               </td>
               <td><span className="badge">{translateStatus(job.lastStatus)}</span></td>
+              <td>
+                <span className="badge">{job.healthLabel}</span>
+                {job.healthReasons.length ? <div className="muted code" style={{ marginTop: 6 }}>{job.healthReasons.join(' · ')}</div> : null}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -67,4 +73,13 @@ function translateBucket(bucket: string) {
   if (bucket === 'tomorrow') return 'demain';
   if (bucket === 'later') return 'plus tard';
   return 'inconnu';
+}
+
+function formatDuration(durationMs: number) {
+  if (durationMs < 1000) return `${durationMs} ms`;
+  const seconds = Math.round(durationMs / 1000);
+  if (seconds < 60) return `${seconds} s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes} min ${remainingSeconds}s`;
 }

@@ -33,6 +33,8 @@ export default async function CalendarPage({
       <CronStatusCards
         total={jobs.length}
         healthy={jobs.filter((job) => job.lastStatus === 'ok').length}
+        warning={jobs.filter((job) => job.health === 'warning').length}
+        danger={jobs.filter((job) => job.health === 'danger').length}
         today={jobs.filter((job) => job.timingBucket === 'today').length}
         tomorrow={jobs.filter((job) => job.timingBucket === 'tomorrow').length}
         later={jobs.filter((job) => job.timingBucket === 'later').length}

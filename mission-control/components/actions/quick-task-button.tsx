@@ -8,29 +8,35 @@ export function QuickTaskButton({
   relatedMemoryIds,
   relatedCronIds,
   owner = 'Elon',
+  label = 'Créer une tâche liée',
+  doneLabel = 'Tâche créée',
+  className = 'action-button',
 }: {
   title: string;
   description?: string;
   relatedMemoryIds?: string[];
   relatedCronIds?: string[];
   owner?: string;
+  label?: string;
+  doneLabel?: string;
+  className?: string;
 }) {
-  const [state, setState] = useState<'idle' | 'saving' | 'done'>('idle');
+  const [state, setState] = useState<'idle' | 'saving' | 'done' | 'error'>('idle');
 
   async function create() {
     setState('saving');
-    await fetch('/api/tasks', {
+    const response = await fetch('/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, description, owner, relatedMemoryIds, relatedCronIds, category: 'suivi' }),
     });
-    setState('done');
+    setState(response.ok ? 'done' : 'error');
     setTimeout(() => setState('idle'), 1800);
   }
 
   return (
-    <button onClick={create} className="action-button">
-      {state === 'saving' ? 'Création...' : state === 'done' ? 'Tâche créée' : 'Créer une tâche liée'}
+    <button onClick={create} className={className}>
+      {state === 'saving' ? 'Création...' : state === 'done' ? doneLabel : state === 'error' ? 'Erreur' : label}
     </button>
   );
 }

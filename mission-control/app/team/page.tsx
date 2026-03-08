@@ -30,6 +30,8 @@ export default async function TeamPage() {
       sessionAge: formatAge(agentRuntime?.lastActiveAgeMs),
       lastModel: agentRuntime?.lastModel,
       contextUsage: agentRuntime?.recentPercentUsed,
+      runtimeHealth: agentRuntime?.healthLabel,
+      runtimeIssues: agentRuntime?.issues,
     };
   });
 
@@ -48,6 +50,7 @@ export default async function TeamPage() {
         <Card>
           <div className="muted">Gateway</div>
           <div className="kpi">{runtime.gatewayReachable ? 'OK' : 'DOWN'}</div>
+          <div className="muted">Santé globale : <strong style={{ color: 'var(--text)' }}>{runtime.healthLabel}</strong></div>
         </Card>
       </div>
       <div style={{ marginTop: 18 }}>

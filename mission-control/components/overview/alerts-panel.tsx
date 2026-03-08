@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Card } from '@/components/layout/card';
+import { QuickTaskButton } from '@/components/actions/quick-task-button';
 
 type AlertItem = {
   level: 'warning' | 'danger' | 'info';
@@ -29,11 +30,16 @@ export function AlertsPanel({ alerts }: { alerts: AlertItem[] }) {
               </div>
               <span className="badge">{translateLevel(alert.level)}</span>
             </div>
-            {alert.href ? (
-              <div style={{ marginTop: 10 }}>
-                <Link href={alert.href} className="alert-link">{alert.cta || 'Ouvrir'}</Link>
-              </div>
-            ) : null}
+            <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {alert.href ? <Link href={alert.href} className="alert-link">{alert.cta || 'Ouvrir'}</Link> : null}
+              <QuickTaskButton
+                title={`Traitement alerte · ${alert.label}`}
+                description={alert.detail}
+                label="Créer un suivi"
+                doneLabel="Suivi créé"
+                className="action-button secondary-button"
+              />
+            </div>
           </div>
         ))}
       </div>

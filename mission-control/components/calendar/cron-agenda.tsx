@@ -34,6 +34,9 @@ export function CronAgenda({ jobs, linkedTasks = {}, focusJobId }: { jobs: CronJ
                     <strong>{job.name}</strong>
                     <div className="muted code">{job.agentId || 'défaut'} · {job.schedule}</div>
                     {job.nextRunAt ? <div className="muted">Prochain run : {new Date(job.nextRunAt).toLocaleString('fr-FR')}</div> : null}
+                    <div className="muted">Santé : <strong style={{ color: 'var(--text)' }}>{job.healthLabel}</strong></div>
+                    <div className="muted">Runs récents : <strong style={{ color: 'var(--text)' }}>OK {job.successCount} · KO {job.failureCount}</strong></div>
+                    {job.healthReasons.length ? <div className="muted code">{job.healthReasons.join(' · ')}</div> : null}
                     <LinkedEntities title="Tâches liées" items={linkedTasks[job.id] || []} />
                     <CronRunHistory runs={job.recentRuns} />
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>

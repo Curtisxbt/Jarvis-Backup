@@ -11,6 +11,8 @@ export interface CronRunView {
   durationMs?: number;
 }
 
+export type HealthLevel = 'ok' | 'warning' | 'danger';
+
 export interface CronJobView {
   id: string;
   name: string;
@@ -24,6 +26,11 @@ export interface CronJobView {
   lastStatus?: string;
   lastDurationMs?: number;
   recentRuns?: CronRunView[];
+  failureCount: number;
+  successCount: number;
+  health: HealthLevel;
+  healthLabel: string;
+  healthReasons: string[];
   sessionTarget?: string;
   deliveryMode?: string;
   timingBucket: 'today' | 'tomorrow' | 'later' | 'unknown';
@@ -77,10 +84,21 @@ export async function getCronJobs(): Promise<CronJobView[]> {
   });
 
   const recentRuns = await getCronRuns();
-  return jobs.map((job) => ({
-    ...job,
-    recentRuns: recentRuns.filter((run) => run.jobId === job.id).slice(0, 3),
-  }));
+  return jobs.map((job) => {
+    const jobRuns = recentRuns.filter((run) => run.jobId === job.id).slice(0, 5);
+    const failureCount = jobRuns.filter((run) => isFailure(run.status)).length;
+    const successCount = jobRuns.filter((run) => isSuccess(run.status)).length;
+    const health = getCronHealth({ enabled: job.enabled !== false, lastStatus: job.lastStatus, lastDurationMs: job.lastDurationMs, failureCount, nextRunAt: job.nextRunAt });
+    return {
+      ...job,
+      recentRuns: jobRuns,
+      failureCount,
+      successCount,
+      health: health.level,
+      healthLabel: health.label,
+      healthReasons: health.reasons,
+    };
+  });
 }
 
 export async function getCronRuns(jobId?: string): Promise<CronRunView[]> {
@@ -123,4 +141,44 @@ function getTimingBucket(nextRunAt?: string): 'today' | 'tomorrow' | 'later' | '
   if (next >= startToday && next < startTomorrow) return 'today';
   if (next >= startTomorrow && next < startAfterTomorrow) return 'tomorrow';
   return 'later';
+}
+
+function isFailure(status?: string) {
+  return status === 'error' || status === 'failed';
+}
+
+function isSuccess(status?: string) {
+  return status === 'ok' || status === 'success';
+}
+
+function getCronHealth({
+  enabled,
+  lastStatus,
+  lastDurationMs,
+  failureCount,
+  nextRunAt,
+}: {
+  enabled: boolean;
+  lastStatus?: string;
+  lastDurationMs?: number;
+  failureCount: number;
+  nextRunAt?: string;
+}): { level: HealthLevel; label: string; reasons: string[] } {
+  const reasons: string[] = [];
+
+  if (!enabled) reasons.push('job désactivé');
+  if (isFailure(lastStatus)) reasons.push('dernier run en échec');
+  if (failureCount >= 2) reasons.push('échecs récents répétés');
+  if ((lastDurationMs ?? 0) >= 1000 * 60 * 5) reasons.push('durée anormalement longue');
+  if (!nextRunAt) reasons.push('prochain run inconnu');
+
+  if (isFailure(lastStatus) || failureCount >= 2) {
+    return { level: 'danger', label: 'critique', reasons };
+  }
+
+  if (!enabled || (lastDurationMs ?? 0) >= 1000 * 60 * 5 || !nextRunAt) {
+    return { level: 'warning', label: 'attention', reasons };
+  }
+
+  return { level: 'ok', label: 'ok', reasons };
 }
