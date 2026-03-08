@@ -2,7 +2,7 @@ import { CronRunView } from '@/lib/cron/openclaw';
 
 export function CronRunHistory({ runs }: { runs?: CronRunView[] }) {
   if (!runs || !runs.length) {
-    return <div className="muted code" style={{ marginTop: 6 }}>Aucun historique récent.</div>;
+    return <div className="muted code" style={{ marginTop: 6 }}>Historique à la demande (non chargé au premier affichage).</div>;
   }
 
   return (

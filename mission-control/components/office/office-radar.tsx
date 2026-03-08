@@ -105,23 +105,22 @@ function AgentRoom({ seat, room }: { seat: OfficeRadarItem; room: 'elon' | 'jock
           </>
         ) : null}
 
-        <div className={`office-agent office-agent--${room} office-agent--${seat.visualState}`}>
+        <div className={`office-agent office-agent--${room} office-agent--${seat.visualState} office-agent--${seat.status === 'blocked' ? 'offline' : 'online'}`}>
           <div className="office-agent__aura" />
-          <div className={`office-character office-character--${room} office-character--${seat.visualState}`}>
-            <div className="office-character__shadow" />
-            <div className="office-character__body">
-              <div className="office-character__head">
-                <div className="office-character__eyes" />
+          <div className={`office-portrait office-portrait--${room} office-portrait--${seat.visualState} office-portrait--${seat.status === 'blocked' ? 'offline' : 'online'}`}>
+            <div className="office-portrait__shadow" />
+            <div className="office-portrait__ring">
+              <div className="office-portrait__frame">
+                <img
+                  src={room === 'elon' ? '/agents/elon.jpg' : '/agents/jocko.jpg'}
+                  alt={room === 'elon' ? 'Elon' : 'Jocko'}
+                  className="office-portrait__img"
+                />
               </div>
-              <div className="office-character__torso" />
-              <div className="office-character__arm office-character__arm--left" />
-              <div className="office-character__arm office-character__arm--right" />
-              <div className="office-character__leg office-character__leg--left" />
-              <div className="office-character__leg office-character__leg--right" />
-              {room === 'elon' ? <div className="office-character__accessory office-character__accessory--laptop" /> : null}
-              {room === 'jocko' && seat.visualState === 'meditation' ? <div className="office-character__accessory office-character__accessory--zen" /> : null}
-              {room === 'jocko' && seat.visualState !== 'meditation' ? <div className="office-character__accessory office-character__accessory--band" /> : null}
             </div>
+            {room === 'elon' ? <div className="office-portrait__chip office-portrait__chip--elon">OPS</div> : null}
+            {room === 'jocko' && seat.visualState === 'meditation' ? <div className="office-portrait__chip office-portrait__chip--zen">ZEN</div> : null}
+            {room === 'jocko' && seat.visualState !== 'meditation' ? <div className="office-portrait__chip office-portrait__chip--jocko">DISCIPLINE</div> : null}
           </div>
           <div className="office-agent__label">{capitalize(seat.agentId)}</div>
         </div>
@@ -155,17 +154,9 @@ function CentralHub({ seats }: { seats: OfficeRadarItem[] }) {
         <div className="office-server-rack office-server-rack--2" />
         <div className="office-agent office-agent--hub office-agent--online">
           <div className="office-agent__aura" />
-          <div className="office-character office-character--hub office-character--online">
-            <div className="office-character__shadow" />
-            <div className="office-character__body">
-              <div className="office-character__head"><div className="office-character__eyes" /></div>
-              <div className="office-character__torso" />
-              <div className="office-character__arm office-character__arm--left" />
-              <div className="office-character__arm office-character__arm--right" />
-              <div className="office-character__leg office-character__leg--left" />
-              <div className="office-character__leg office-character__leg--right" />
-              <div className="office-character__accessory office-character__accessory--core" />
-            </div>
+          <div className="office-core-avatar">
+            <div className="office-core-avatar__ring" />
+            <div className="office-core-avatar__orb" />
           </div>
           <div className="office-agent__label">Core</div>
         </div>

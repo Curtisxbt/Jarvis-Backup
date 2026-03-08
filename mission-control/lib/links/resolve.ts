@@ -36,8 +36,12 @@ export async function getLinkableResources() {
   };
 }
 
-export async function getTaskRelations() {
-  const [tasks, memoryDocs, cronJobs] = await Promise.all([getTasks(), getMemoryDocuments(), getCronJobs()]);
+export async function getTaskRelations(input?: { cronJobs?: Awaited<ReturnType<typeof getCronJobs>> }) {
+  const [tasks, memoryDocs, cronJobs] = await Promise.all([
+    getTasks(),
+    getMemoryDocuments(),
+    input?.cronJobs ? Promise.resolve(input.cronJobs) : getCronJobs(),
+  ]);
 
   const tasksByMemoryId = new Map<string, typeof tasks>();
   const tasksByCronId = new Map<string, typeof tasks>();

@@ -3,6 +3,9 @@ import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
 
+const CRON_CACHE_TTL_MS = 10_000;
+let cronJobsCache: { key: string; expiresAt: number; value: CronJobView[] } | null = null;
+
 export interface CronRunView {
   jobId: string;
   startedAt?: string;
@@ -55,7 +58,13 @@ interface CronListResponse {
   }>;
 }
 
-export async function getCronJobs(): Promise<CronJobView[]> {
+export async function getCronJobs(options?: { includeRuns?: boolean }): Promise<CronJobView[]> {
+  const cacheKey = options?.includeRuns ? 'with-runs' : 'base';
+  const now = Date.now();
+  if (cronJobsCache && cronJobsCache.key === cacheKey && cronJobsCache.expiresAt > now) {
+    return cronJobsCache.value;
+  }
+
   const { stdout } = await execFileAsync('openclaw', ['cron', 'list', '--json'], {
     cwd: '/home/jarvis/.openclaw/workspace',
     timeout: 20000,
@@ -65,6 +74,17 @@ export async function getCronJobs(): Promise<CronJobView[]> {
   const parsed = JSON.parse(stdout) as CronListResponse;
   const jobs = (parsed.jobs || []).map((job) => {
     const nextRunAt = job.state?.nextRunAtMs ? new Date(job.state.nextRunAtMs).toISOString() : undefined;
+    const lastStatus = job.state?.lastStatus || job.state?.lastRunStatus;
+    const failureCount = isFailure(lastStatus) ? 1 : 0;
+    const successCount = isSuccess(lastStatus) ? 1 : 0;
+    const health = getCronHealth({
+      enabled: (job as any).enabled !== false,
+      lastStatus,
+      lastDurationMs: job.state?.lastDurationMs,
+      failureCount,
+      nextRunAt,
+    });
+
     return {
       id: job.id,
       name: job.name,
@@ -75,16 +95,31 @@ export async function getCronJobs(): Promise<CronJobView[]> {
       timezone: job.schedule?.tz,
       nextRunAt,
       lastRunAt: job.state?.lastRunAtMs ? new Date(job.state.lastRunAtMs).toISOString() : undefined,
-      lastStatus: job.state?.lastStatus || job.state?.lastRunStatus,
+      lastStatus,
       lastDurationMs: job.state?.lastDurationMs,
+      recentRuns: [],
+      failureCount,
+      successCount,
+      health: health.level,
+      healthLabel: health.label,
+      healthReasons: health.reasons,
       sessionTarget: job.sessionTarget,
       deliveryMode: job.delivery?.mode,
       timingBucket: getTimingBucket(nextRunAt),
     } as CronJobView;
   });
 
+  if (!options?.includeRuns) {
+    cronJobsCache = {
+      key: cacheKey,
+      expiresAt: now + CRON_CACHE_TTL_MS,
+      value: jobs,
+    };
+    return jobs;
+  }
+
   const recentRuns = await getCronRuns();
-  return jobs.map((job) => {
+  const hydratedJobs = jobs.map((job) => {
     const jobRuns = recentRuns.filter((run) => run.jobId === job.id).slice(0, 5);
     const failureCount = jobRuns.filter((run) => isFailure(run.status)).length;
     const successCount = jobRuns.filter((run) => isSuccess(run.status)).length;
@@ -99,6 +134,14 @@ export async function getCronJobs(): Promise<CronJobView[]> {
       healthReasons: health.reasons,
     };
   });
+
+  cronJobsCache = {
+    key: cacheKey,
+    expiresAt: now + CRON_CACHE_TTL_MS,
+    value: hydratedJobs,
+  };
+
+  return hydratedJobs;
 }
 
 export async function getCronRuns(jobId?: string): Promise<CronRunView[]> {

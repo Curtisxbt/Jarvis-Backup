@@ -10,7 +10,8 @@ export default async function CalendarPage({
   searchParams: Promise<{ jobId?: string }>;
 }) {
   const params = await searchParams;
-  const [jobs, relations] = await Promise.all([getCronJobs(), getTaskRelations()]);
+  const jobs = await getCronJobs({ includeRuns: false });
+  const relations = await getTaskRelations({ cronJobs: jobs });
 
   const linkedTasks = Object.fromEntries(
     jobs.map((job) => [
