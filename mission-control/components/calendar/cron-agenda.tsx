@@ -10,6 +10,7 @@ type LinkedItem = { id: string; label: string; meta: string; href?: string };
 
 export function CronAgenda({ jobs, linkedTasks = {}, focusJobId }: { jobs: CronJobView[]; linkedTasks?: Record<string, LinkedItem[]>; focusJobId?: string }) {
   const groups = [
+    { key: 'yesterday', label: 'Hier' },
     { key: 'today', label: 'Aujourd’hui' },
     { key: 'tomorrow', label: 'Demain' },
     { key: 'later', label: 'Plus tard' },
@@ -32,8 +33,10 @@ export function CronAgenda({ jobs, linkedTasks = {}, focusJobId }: { jobs: CronJ
                 <div key={job.id} className={focusJobId === job.id ? 'focus-card' : undefined} style={rowStyle}>
                   <div>
                     <strong>{job.name}</strong>
-                    <div className="muted code">{job.agentId || 'défaut'} · {job.schedule}</div>
-                    {job.nextRunAt ? <div className="muted">Prochain run : {new Date(job.nextRunAt).toLocaleString('fr-FR')}</div> : null}
+                    <div className="muted code">{job.agentId || 'défaut'} · {job.schedule} · {job.source}</div>
+                    {group.key === 'yesterday'
+                      ? <div className="muted">Exécution d’hier : <strong style={{ color: 'var(--text)' }}>{job.lastRunAt ? new Date(job.lastRunAt).toLocaleString('fr-FR') : 'non détectée'}</strong></div>
+                      : job.nextRunAt ? <div className="muted">Prochain run : {new Date(job.nextRunAt).toLocaleString('fr-FR')}</div> : null}
                     <div className="muted">Santé : <strong style={{ color: 'var(--text)' }}>{job.healthLabel}</strong></div>
                     <div className="muted">Runs récents : <strong style={{ color: 'var(--text)' }}>OK {job.successCount} · KO {job.failureCount}</strong></div>
                     {job.healthReasons.length ? <div className="muted code">{job.healthReasons.join(' · ')}</div> : null}

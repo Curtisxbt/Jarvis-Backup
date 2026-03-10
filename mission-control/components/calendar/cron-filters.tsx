@@ -29,6 +29,7 @@ export function CronFilters({
       </select>
       <select value={filters.bucket} onChange={(e) => onChange({ ...filters, bucket: e.target.value })} style={inputStyle}>
         <option value="">Toutes les échéances</option>
+        <option value="yesterday">Hier</option>
         <option value="today">Aujourd’hui</option>
         <option value="tomorrow">Demain</option>
         <option value="later">Plus tard</option>

@@ -10,7 +10,7 @@ export default async function CalendarPage({
   searchParams: Promise<{ jobId?: string }>;
 }) {
   const params = await searchParams;
-  const jobs = await getCronJobs({ includeRuns: false });
+  const jobs = await getCronJobs({ includeRuns: false, includeLinuxUserCrons: true });
   const relations = await getTaskRelations({ cronJobs: jobs });
 
   const linkedTasks = Object.fromEntries(
@@ -36,6 +36,7 @@ export default async function CalendarPage({
         healthy={jobs.filter((job) => job.lastStatus === 'ok').length}
         warning={jobs.filter((job) => job.health === 'warning').length}
         danger={jobs.filter((job) => job.health === 'danger').length}
+        yesterday={jobs.filter((job) => job.timingBucket === 'yesterday').length}
         today={jobs.filter((job) => job.timingBucket === 'today').length}
         tomorrow={jobs.filter((job) => job.timingBucket === 'tomorrow').length}
         later={jobs.filter((job) => job.timingBucket === 'later').length}

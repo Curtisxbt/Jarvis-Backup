@@ -11,12 +11,13 @@ type LinkedItem = { id: string; label: string; meta: string; href?: string };
 export function CronTable({ jobs, linkedTasks = {}, focusJobId }: { jobs: CronJobView[]; linkedTasks?: Record<string, LinkedItem[]>; focusJobId?: string }) {
   return (
     <Card>
-      <h3>Jobs cron OpenClaw</h3>
+      <h3>Automatisations planifiées</h3>
       <table className="table">
         <thead>
           <tr>
             <th>Nom</th>
             <th>Agent</th>
+            <th>Source</th>
             <th>Planification</th>
             <th>Prochain run</th>
             <th>Dernier run</th>
@@ -39,6 +40,7 @@ export function CronTable({ jobs, linkedTasks = {}, focusJobId }: { jobs: CronJo
                 </div>
               </td>
               <td>{job.agentId || 'défaut'}</td>
+              <td><span className="badge">{job.source}</span></td>
               <td>
                 <div className="code">{job.schedule}</div>
                 <div className="muted">{job.timezone || 'local'} · {translateBucket(job.timingBucket)}</div>

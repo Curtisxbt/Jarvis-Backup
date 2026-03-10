@@ -15,6 +15,7 @@ export interface CronRunView {
 }
 
 export type HealthLevel = 'ok' | 'warning' | 'danger';
+export type TimingBucket = 'yesterday' | 'today' | 'tomorrow' | 'later' | 'unknown';
 
 export interface CronJobView {
   id: string;
@@ -36,7 +37,8 @@ export interface CronJobView {
   healthReasons: string[];
   sessionTarget?: string;
   deliveryMode?: string;
-  timingBucket: 'today' | 'tomorrow' | 'later' | 'unknown';
+  source: 'openclaw' | 'linux';
+  timingBucket: TimingBucket;
 }
 
 interface CronListResponse {
@@ -58,8 +60,8 @@ interface CronListResponse {
   }>;
 }
 
-export async function getCronJobs(options?: { includeRuns?: boolean }): Promise<CronJobView[]> {
-  const cacheKey = options?.includeRuns ? 'with-runs' : 'base';
+export async function getCronJobs(options?: { includeRuns?: boolean; includeLinuxUserCrons?: boolean }): Promise<CronJobView[]> {
+  const cacheKey = `${options?.includeRuns ? 'with-runs' : 'base'}:${options?.includeLinuxUserCrons === false ? 'no-linux' : 'with-linux'}`;
   const now = Date.now();
   if (cronJobsCache && cronJobsCache.key === cacheKey && cronJobsCache.expiresAt > now) {
     return cronJobsCache.value;
@@ -105,21 +107,24 @@ export async function getCronJobs(options?: { includeRuns?: boolean }): Promise<
       healthReasons: health.reasons,
       sessionTarget: job.sessionTarget,
       deliveryMode: job.delivery?.mode,
-      timingBucket: getTimingBucket(nextRunAt),
+      source: 'openclaw',
+      timingBucket: getDisplayBucket(nextRunAt, job.state?.lastRunAtMs ? new Date(job.state.lastRunAtMs).toISOString() : undefined),
     } as CronJobView;
   });
+
+  const jobsWithLinux = options?.includeLinuxUserCrons === false ? jobs : [...jobs, ...(await getLinuxUserCronJobs())];
 
   if (!options?.includeRuns) {
     cronJobsCache = {
       key: cacheKey,
       expiresAt: now + CRON_CACHE_TTL_MS,
-      value: jobs,
+      value: jobsWithLinux,
     };
-    return jobs;
+    return jobsWithLinux;
   }
 
   const recentRuns = await getCronRuns();
-  const hydratedJobs = jobs.map((job) => {
+  const hydratedOpenclawJobs = jobs.map((job) => {
     const jobRuns = recentRuns.filter((run) => run.jobId === job.id).slice(0, 5);
     const failureCount = jobRuns.filter((run) => isFailure(run.status)).length;
     const successCount = jobRuns.filter((run) => isSuccess(run.status)).length;
@@ -134,6 +139,10 @@ export async function getCronJobs(options?: { includeRuns?: boolean }): Promise<
       healthReasons: health.reasons,
     };
   });
+
+  const hydratedJobs = options?.includeLinuxUserCrons === false
+    ? hydratedOpenclawJobs
+    : [...hydratedOpenclawJobs, ...(await getLinuxUserCronJobs())];
 
   cronJobsCache = {
     key: cacheKey,
@@ -171,7 +180,12 @@ export async function getCronRuns(jobId?: string): Promise<CronRunView[]> {
   }
 }
 
-function getTimingBucket(nextRunAt?: string): 'today' | 'tomorrow' | 'later' | 'unknown' {
+function getDisplayBucket(nextRunAt?: string, lastRunAt?: string): TimingBucket {
+  if (lastRunAt && isYesterday(lastRunAt)) return 'yesterday';
+  return getTimingBucket(nextRunAt);
+}
+
+function getTimingBucket(nextRunAt?: string): TimingBucket {
   if (!nextRunAt) return 'unknown';
   const now = new Date();
   const next = new Date(nextRunAt);
@@ -180,7 +194,10 @@ function getTimingBucket(nextRunAt?: string): 'today' | 'tomorrow' | 'later' | '
   startTomorrow.setDate(startTomorrow.getDate() + 1);
   const startAfterTomorrow = new Date(startTomorrow);
   startAfterTomorrow.setDate(startAfterTomorrow.getDate() + 1);
+  const startYesterday = new Date(startToday);
+  startYesterday.setDate(startYesterday.getDate() - 1);
 
+  if (next >= startYesterday && next < startToday) return 'yesterday';
   if (next >= startToday && next < startTomorrow) return 'today';
   if (next >= startTomorrow && next < startAfterTomorrow) return 'tomorrow';
   return 'later';
@@ -192,6 +209,113 @@ function isFailure(status?: string) {
 
 function isSuccess(status?: string) {
   return status === 'ok' || status === 'success';
+}
+
+function isYesterday(value: string) {
+  const date = new Date(value);
+  const now = new Date();
+  const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startYesterday = new Date(startToday);
+  startYesterday.setDate(startYesterday.getDate() - 1);
+  return date >= startYesterday && date < startToday;
+}
+
+async function getLinuxUserCronJobs(): Promise<CronJobView[]> {
+  try {
+    const [{ stdout: cronStdout }, linuxCronRuns] = await Promise.all([
+      execFileAsync('crontab', ['-l'], { cwd: '/home/jarvis/.openclaw/workspace', timeout: 10000, maxBuffer: 1024 * 1024 }),
+      getLinuxCronRuns(),
+    ]);
+
+    const lines = cronStdout
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith('#'));
+
+    const jobs = lines
+      .map((line, index) => parseLinuxCronLine(line, index, linuxCronRuns))
+      .filter((job): job is CronJobView => Boolean(job));
+
+    return jobs;
+  } catch {
+    return [];
+  }
+}
+
+function parseLinuxCronLine(line: string, index: number, runs: Record<string, CronRunView | undefined>): CronJobView | null {
+  const parts = line.split(/\s+/);
+  if (parts.length < 6) return null;
+  const [minute, hour, dom, month, dow, ...commandParts] = parts;
+  const command = commandParts.join(' ');
+  if (!command.includes('/home/jarvis/')) return null;
+  if (command.includes('merge_session_memory.py')) return null;
+
+  const nextRunAt = getNextRunFromSimpleCron(minute, hour, dom, month, dow);
+  const runKey = command.includes('backup_cerveau.sh') ? 'backup_cerveau.sh' : command;
+  const run = runs[runKey];
+  const lastStatus = run?.status || 'pending';
+  const failureCount = isFailure(lastStatus) ? 1 : 0;
+  const successCount = isSuccess(lastStatus) ? 1 : 0;
+  const health = getCronHealth({ enabled: true, lastStatus, lastDurationMs: run?.durationMs, failureCount, nextRunAt });
+
+  return {
+    id: `linux-${index}`,
+    name: command.includes('backup_cerveau.sh') ? 'backup-cerveau' : `cron-linux-${index}`,
+    description: command,
+    agentId: 'linux',
+    enabled: true,
+    schedule: `${minute} ${hour} ${dom} ${month} ${dow}`,
+    timezone: 'Europe/Paris',
+    nextRunAt,
+    lastRunAt: run?.startedAt,
+    lastStatus,
+    lastDurationMs: run?.durationMs,
+    recentRuns: run ? [run] : [],
+    failureCount,
+    successCount,
+    health: health.level,
+    healthLabel: health.label,
+    healthReasons: health.reasons,
+    source: 'linux',
+    timingBucket: getDisplayBucket(nextRunAt, run?.startedAt),
+  };
+}
+
+function getNextRunFromSimpleCron(minute: string, hour: string, dom: string, month: string, dow: string) {
+  if (![minute, hour].every((v) => /^\d+$/.test(v)) || dom !== '*' || month !== '*' || dow !== '*') return undefined;
+  const now = new Date();
+  const next = new Date(now);
+  next.setSeconds(0, 0);
+  next.setHours(Number(hour), Number(minute), 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+  return next.toISOString();
+}
+
+async function getLinuxCronRuns(): Promise<Record<string, CronRunView | undefined>> {
+  try {
+    const { stdout } = await execFileAsync('journalctl', ['--since', '2 days ago', '-o', 'short-iso', '--no-pager'], {
+      cwd: '/home/jarvis/.openclaw/workspace',
+      timeout: 15000,
+      maxBuffer: 4 * 1024 * 1024,
+    });
+
+    const lines = stdout.split('\n');
+    const backupLines = lines.filter((line) => line.includes('backup_cerveau.sh'));
+    const latest = backupLines[backupLines.length - 1];
+    if (!latest) return {};
+
+    const match = latest.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/);
+    const startedAt = match ? new Date(match[1]).toISOString() : undefined;
+    return {
+      'backup_cerveau.sh': {
+        jobId: 'backup_cerveau.sh',
+        startedAt,
+        status: 'ok',
+      },
+    };
+  } catch {
+    return {};
+  }
 }
 
 function getCronHealth({

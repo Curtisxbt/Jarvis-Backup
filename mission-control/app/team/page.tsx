@@ -1,3 +1,5 @@
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { Card } from '@/components/layout/card';
 import { PageHeader } from '@/components/layout/page-header';
 import { TeamSummary } from '@/components/team/team-summary';
@@ -7,13 +9,16 @@ import { getCronJobs } from '@/lib/cron/openclaw';
 import { getMemoryDocuments } from '@/lib/memory/scan';
 import { findAgentRuntime, formatAge, getRuntimeSignal } from '@/lib/agents/runtime';
 
+const execFileAsync = promisify(execFile);
+
 export default async function TeamPage() {
-  const [team, tasks, cronJobs, memoryDocs, runtime] = await Promise.all([
+  const [team, tasks, cronJobs, memoryDocs, runtime, pm2Apps] = await Promise.all([
     Promise.resolve(getAgentProfiles()),
     getTasks(),
     getCronJobs(),
     getMemoryDocuments(),
     getRuntimeSignal(),
+    getPm2Apps(),
   ]);
 
   const summary = team.map((member) => {
@@ -56,6 +61,57 @@ export default async function TeamPage() {
       <div style={{ marginTop: 18 }}>
         <TeamSummary items={summary} />
       </div>
+      <div style={{ marginTop: 18 }}>
+        <Card>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <h3>Processus PM2</h3>
+            <span className="badge">{pm2Apps.length}</span>
+          </div>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Statut</th>
+                <th>CPU</th>
+                <th>Mémoire</th>
+                <th>Redémarrages</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pm2Apps.map((app) => (
+                <tr key={app.name}>
+                  <td>{app.name}</td>
+                  <td><span className="badge">{app.status}</span></td>
+                  <td>{app.cpu}%</td>
+                  <td>{app.memoryMb} MB</td>
+                  <td>{app.restarts}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </div>
     </>
   );
+}
+
+async function getPm2Apps() {
+  try {
+    const { stdout } = await execFileAsync('pm2', ['jlist'], {
+      cwd: '/home/jarvis/.openclaw/workspace',
+      timeout: 10000,
+      maxBuffer: 2 * 1024 * 1024,
+    });
+
+    const parsed = JSON.parse(stdout) as Array<any>;
+    return parsed.map((app) => ({
+      name: app.name,
+      status: app.pm2_env?.status || 'unknown',
+      cpu: Number(app.monit?.cpu ?? 0),
+      memoryMb: Math.round((app.monit?.memory ?? 0) / 1024 / 1024),
+      restarts: app.pm2_env?.restart_time ?? 0,
+    }));
+  } catch {
+    return [];
+  }
 }
