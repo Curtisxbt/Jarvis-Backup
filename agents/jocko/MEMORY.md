@@ -33,7 +33,7 @@
 ## Profil stable (perso/pro)
 
 - Vie pro : co-fondateur de Nuit Blanche Production depuis novembre 2012 (répartition 50/50 avec un associé).
-- Vie perso : en couple avec Ghislaine depuis 2015 ; mariage à Las Vegas en 2017 ; maison acquise en 2019.
+- Vie perso : en couple avec Ghislaine depuis 2015 ; PACS depuis 2015 ; mariage symbolique à Las Vegas en 2017 (non valable en France) ; maison acquise en 2019.
 
 ## Nutrition & suppléments (repères utiles)
 

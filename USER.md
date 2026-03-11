@@ -4,7 +4,7 @@
 - **Nom** : Denis (né le 31/08/1991)
 - **Localisation** : Golbey, Vosges, France
 - **Profession** : Réalisateur (Nuit Blanche Production) & trader actif
-- **Famille** : Marié à Ghislaine, deux fils (Lenny 10/10/2019, Charly 28/07/2022), propriétaire
+- **Famille** : PACSé avec Ghislaine depuis 2015, mariage symbolique à Las Vegas en 2017 (non valable en France), deux fils (Lenny 10/10/2019, Charly 28/07/2022), propriétaire
 
 ## Paramètres physiques
 - **Taille** : 182 cm
