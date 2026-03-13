@@ -4,20 +4,16 @@ import { RecentMemory } from '@/components/overview/recent-memory';
 import { AgentActivity } from '@/components/overview/agent-activity';
 import { QuickActions } from '@/components/overview/quick-actions';
 import { AlertsPanel } from '@/components/overview/alerts-panel';
-import { getTasks } from '@/lib/tasks/store';
 import { getCronJobs } from '@/lib/cron/openclaw';
 import { getMemoryDocuments } from '@/lib/memory/scan';
 import { getAgentProfiles } from '@/lib/agents/registry';
-import { getTaskRelations } from '@/lib/links/resolve';
 import { getRuntimeSignal } from '@/lib/agents/runtime';
 import { buildAlerts } from '@/lib/alerts/engine';
 
 export default async function HomePage() {
-  const [tasks, cronJobs, memoryDocs, relations, runtime] = await Promise.all([
-    getTasks(),
+  const [cronJobs, memoryDocs, runtime] = await Promise.all([
     getCronJobs(),
     getMemoryDocuments(),
-    getTaskRelations(),
     getRuntimeSignal(),
   ]);
   const team = getAgentProfiles();
@@ -28,13 +24,10 @@ export default async function HomePage() {
   }));
   const activeAgents = team.filter((member) => member.status === 'working' || member.status === 'online').length;
   const todaysElonMemory = memoryDocs.some((doc) => doc.agent === 'elon' && doc.kind === 'daily' && doc.date === new Date().toISOString().slice(0, 10));
-  const orphanCrons = cronJobs.filter((job) => !(relations.tasksByCronId.get(job.id) || []).length);
 
   const alerts = buildAlerts({
-    tasks,
     cronJobs,
     todaysElonMemory,
-    orphanCronCount: orphanCrons.length,
     runtime,
   });
 
@@ -46,8 +39,6 @@ export default async function HomePage() {
       />
 
       <OverviewKpis
-        openTasks={tasks.filter((task) => task.status !== 'done').length}
-        blockedTasks={tasks.filter((task) => task.status === 'blocked').length}
         activeCronJobs={cronJobs.length}
         cronHealthy={cronJobs.filter((job) => job.lastStatus === 'ok').length}
         recentMemories={recentMemories.length}

@@ -2,6 +2,7 @@
 
 > Brouillons uniquement.
 > Interdiction d'envoi automatique.
+> Signature HTML dédiée : `agents/elon/documents/mails/signatures/nuit-blanche-signature.html`
 
 ## Objet
 
@@ -37,16 +38,7 @@ entière disposition pour en discuter.
 
 À très vite,
 
-
-
-
-Denis Onsay
-
-Réalisateur
-Nuit Blanche Production
-[image: mobilePhone] 0651301383
-[image: emailAddress] contact@nuitblancheproduction.com
-[image: website] www.nuitblancheproduction.com
+[Ajouter ensuite la signature HTML dédiée depuis `agents/elon/documents/mails/signatures/nuit-blanche-signature.html`]
 ```
 
 ## Version — tutoiement
@@ -79,14 +71,5 @@ entière disposition pour en discuter.
 
 À très vite,
 
-
-
-
-Denis Onsay
-
-Réalisateur
-Nuit Blanche Production
-[image: mobilePhone] 0651301383
-[image: emailAddress] contact@nuitblancheproduction.com
-[image: website] www.nuitblancheproduction.com
+[Ajouter ensuite la signature HTML dédiée depuis `agents/elon/documents/mails/signatures/nuit-blanche-signature.html`]
 ```

@@ -1,17 +1,21 @@
 import Link from 'next/link';
-import { QuickTaskButton } from '@/components/actions/quick-task-button';
 
 type OfficeRadarItem = {
   id: string;
   label: string;
   agentId: string;
   status: string;
-  visualState: string;
-  openTasks: number;
+  stateLabel: string;
+  stateTone: 'active' | 'idle' | 'waiting' | 'error' | 'offline';
+  statusReason: string;
+  statusSinceLabel: string;
+  lastActivityLabel: string;
+  currentTask: string;
+  nextAction: string;
+  blocker: string;
   blockedTasks: number;
   nextCron?: string;
   latestMemory?: string;
-  sessionAge?: string;
   lastModel?: string;
   runtimeHealth?: string;
   runtimeIssues?: string[];
@@ -19,208 +23,220 @@ type OfficeRadarItem = {
   cronIssues?: string[];
 };
 
-export function OfficeRadar({ seats }: { seats: OfficeRadarItem[] }) {
-  const elonSeat = seats.find((seat) => seat.agentId === 'elon');
-  const jockoSeat = seats.find((seat) => seat.agentId === 'jocko');
-  const onlineCount = seats.filter((seat) => seat.status !== 'blocked').length;
-  const criticalCount = seats.filter((seat) => seat.visualState === 'critical').length;
+type ActivityItem = {
+  time: string;
+  agent: string;
+  tone: 'active' | 'idle' | 'waiting' | 'error';
+  label: string;
+  detail: string;
+};
+
+type OfficeRadarProps = {
+  seats: OfficeRadarItem[];
+  activity: ActivityItem[];
+  activeCount: number;
+  idleCount: number;
+  waitingCount: number;
+  errorCount: number;
+  filter: string;
+};
+
+const FILTERS = [
+  { key: 'all', label: 'Tous' },
+  { key: 'active', label: 'Actifs' },
+  { key: 'idle', label: 'Idle' },
+  { key: 'waiting', label: 'En attente' },
+  { key: 'error', label: 'Erreurs' },
+] as const;
+
+export function OfficeRadar({ seats, activity, activeCount, idleCount, waitingCount, errorCount, filter }: OfficeRadarProps) {
+  const visibleSeats = seats.filter((seat) => filter === 'all' || seat.stateTone === filter);
 
   return (
-    <div className="office-world">
-      <div className="office-world__header">
+    <div className="ops-page">
+      <section className="ops-hero card">
         <div>
-          <div className="office-world__title">Bureau vivant</div>
-          <div className="office-world__subtitle">Mode Game Boy / pixel-room. Chaque agent est représenté visuellement selon son état réel.</div>
+          <div className="ops-eyebrow">Radar opérationnel</div>
+          <h2 className="ops-title">Qui bosse, qui attend, qui est bloqué.</h2>
+          <p className="ops-subtitle">Lecture instantanée de l’état réel des agents, avec temps, tâche actuelle, prochaine étape et blocage.</p>
         </div>
-        <div className="office-world__hud">
-          <span className="office-pill">Agents online : {onlineCount}/{seats.length}</span>
-          <span className="office-pill">Postes critiques : {criticalCount}</span>
+        <div className="ops-scoreboard">
+          <MetricPill tone="active" label="Actifs" value={activeCount} />
+          <MetricPill tone="idle" label="Idle" value={idleCount} />
+          <MetricPill tone="waiting" label="En attente" value={waitingCount} />
+          <MetricPill tone="error" label="Erreurs" value={errorCount} />
         </div>
-      </div>
+      </section>
 
-      <div className="office-map card">
-        {elonSeat ? <AgentRoom seat={elonSeat} room="elon" /> : null}
-        <CentralHub seats={seats} />
-        {jockoSeat ? <AgentRoom seat={jockoSeat} room="jocko" /> : null}
-      </div>
+      <section className="ops-toolbar card">
+        <div className="ops-filter-group">
+          {FILTERS.map((item) => (
+            <Link
+              key={item.key}
+              href={item.key === 'all' ? '/office' : `/office?filter=${item.key}`}
+              className={`ops-filter ${filter === item.key ? 'is-active' : ''}`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+        <div className="ops-toolbar-note">Affichage : {visibleSeats.length} agent{visibleSeats.length > 1 ? 's' : ''}</div>
+      </section>
 
-      <div className="grid cols-2" style={{ marginTop: 18 }}>
-        {seats.map((seat) => (
-          <AgentInspector key={seat.id} seat={seat} />
-        ))}
+      <div className="ops-layout">
+        <div className="ops-main-col">
+          <section className="ops-card-grid">
+            {visibleSeats.map((seat) => (
+              <article key={seat.id} className={`ops-agent-card tone-${seat.stateTone}`}>
+                <div className="ops-agent-card__top">
+                  <div className="ops-agent-card__identity">
+                    <div className={`ops-agent-card__portrait tone-${seat.stateTone}`}>
+                      <img
+                        src={seat.agentId === 'elon' ? '/agents/elon.jpg' : '/agents/jocko.jpg'}
+                        alt={seat.agentId === 'elon' ? 'Elon' : 'Jocko'}
+                        className="ops-agent-card__img"
+                      />
+                    </div>
+                    <div>
+                      <div className="ops-agent-card__name">{capitalize(seat.agentId)}</div>
+                      <div className="ops-agent-card__role">{seat.label}</div>
+                    </div>
+                  </div>
+                  <div className={`ops-state-badge tone-${seat.stateTone}`}>
+                    <span className="ops-state-badge__dot" />
+                    {seat.stateLabel}
+                  </div>
+                </div>
+
+                <div className="ops-agent-card__timers">
+                  <div className="ops-stat-box">
+                    <span className="ops-stat-box__label">État depuis</span>
+                    <strong>{seat.statusSinceLabel}</strong>
+                  </div>
+                  <div className="ops-stat-box">
+                    <span className="ops-stat-box__label">Dernière activité</span>
+                    <strong>{seat.lastActivityLabel}</strong>
+                  </div>
+                </div>
+
+                <div className="ops-agent-card__reason">{seat.statusReason}</div>
+
+                <div className="ops-triptych">
+                  <div className="ops-line-item">
+                    <span className="ops-line-item__label">Now</span>
+                    <span className="ops-line-item__value">{seat.currentTask}</span>
+                  </div>
+                  <div className="ops-line-item">
+                    <span className="ops-line-item__label">Next</span>
+                    <span className="ops-line-item__value">{seat.nextAction}</span>
+                  </div>
+                  <div className="ops-line-item">
+                    <span className="ops-line-item__label">Blocker</span>
+                    <span className="ops-line-item__value">{seat.blocker}</span>
+                  </div>
+                </div>
+
+                <div className="ops-mini-grid">
+                  <MiniInfo label="Cron" value={seat.nextCron || 'Aucun'} />
+                  <MiniInfo label="Mémoire" value={seat.latestMemory || 'Aucune'} />
+                  <MiniInfo label="Runtime" value={seat.runtimeHealth || 'inconnue'} />
+                  <MiniInfo label="Modèle" value={seat.lastModel || 'inconnu'} />
+                </div>
+
+                {seat.runtimeIssues?.length || seat.cronIssues?.length ? (
+                  <div className="ops-issues">
+                    {seat.runtimeIssues?.length ? <div><strong>Runtime :</strong> {seat.runtimeIssues.join(' · ')}</div> : null}
+                    {seat.cronIssues?.length ? <div><strong>Cron :</strong> {seat.cronIssues.join(' · ')}</div> : null}
+                  </div>
+                ) : null}
+              </article>
+            ))}
+          </section>
+
+          <section className="card" style={{ marginTop: 18 }}>
+            <div className="ops-section-head">
+              <div>
+                <h3 className="ops-section-title">Vue compacte</h3>
+                <p className="ops-section-subtitle">Tableau de contrôle dense pour lecture rapide.</p>
+              </div>
+            </div>
+            <div className="ops-table-wrap">
+              <table className="ops-table">
+                <thead>
+                  <tr>
+                    <th>Agent</th>
+                    <th>État</th>
+                    <th>Depuis</th>
+                    <th>Dernière activité</th>
+                    <th>Now</th>
+                    <th>Blocker</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleSeats.map((seat) => (
+                    <tr key={seat.id}>
+                      <td>
+                        <div className="ops-table__agent">{capitalize(seat.agentId)}</div>
+                        <div className="ops-table__sub">{seat.label}</div>
+                      </td>
+                      <td><span className={`ops-state-badge tone-${seat.stateTone} compact`}><span className="ops-state-badge__dot" />{seat.stateLabel}</span></td>
+                      <td>{seat.statusSinceLabel}</td>
+                      <td>{seat.lastActivityLabel}</td>
+                      <td>{seat.currentTask}</td>
+                      <td>{seat.blocker}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <aside className="ops-side-col">
+          <section className="card ops-feed-card">
+            <div className="ops-section-head">
+              <div>
+                <h3 className="ops-section-title">Activity feed</h3>
+                <p className="ops-section-subtitle">Ce qui vient vraiment de se passer.</p>
+              </div>
+            </div>
+            <div className="ops-feed-list">
+              {activity.map((item, index) => (
+                <div key={`${item.agent}-${item.time}-${index}`} className={`ops-feed-item tone-${item.tone}`}>
+                  <div className="ops-feed-item__time">{item.time}</div>
+                  <div className="ops-feed-item__body">
+                    <div className="ops-feed-item__top">
+                      <strong>{item.agent}</strong>
+                      <span className={`ops-feed-pill tone-${item.tone}`}>{item.label}</span>
+                    </div>
+                    <div className="ops-feed-item__detail">{item.detail}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
   );
 }
 
-function AgentRoom({ seat, room }: { seat: OfficeRadarItem; room: 'elon' | 'jocko' }) {
-  const isJockoMeditation = room === 'jocko' && seat.visualState === 'meditation';
-
+function MetricPill({ label, value, tone }: { label: string; value: number; tone: 'active' | 'idle' | 'waiting' | 'error' }) {
   return (
-    <section className={`office-room office-room--${room} office-state--${seat.visualState}`}>
-      <div className="office-room__topbar">
-        <span className="office-room__name">{room === 'elon' ? 'Elon HQ' : 'Jocko Zone'}</span>
-        <span className="badge">{translateVisualState(seat.visualState)}</span>
-      </div>
-
-      <div className="office-room__decor">
-        <div className="office-bookshelf" />
-        <div className="office-plant office-plant--left" />
-        <div className="office-plant office-plant--right" />
-        {isJockoMeditation ? (
-          <>
-            <div className="office-yoga-mat" />
-            <div className="office-candle office-candle--1" />
-            <div className="office-candle office-candle--2" />
-            <div className="office-breath-ring" />
-          </>
-        ) : (
-          <>
-            <div className="office-desk" />
-            <div className="office-monitor office-monitor--1" />
-            <div className="office-monitor office-monitor--2" />
-            <div className="office-keyboard" />
-          </>
-        )}
-        {room === 'elon' ? (
-          <>
-            <div className="office-market-ticker">ROI // DATA // EXECUTION</div>
-            <div className="office-wall-frame office-wall-frame--elon" />
-            <div className="office-rug office-rug--elon" />
-          </>
-        ) : null}
-        {room === 'jocko' && !isJockoMeditation ? (
-          <>
-            <div className="office-discipline-board">DISCIPLINE // BREATH // FOCUS</div>
-            <div className="office-wall-frame office-wall-frame--jocko" />
-            <div className="office-rug office-rug--jocko" />
-            <div className="office-dumbbells" />
-          </>
-        ) : null}
-        {room === 'jocko' && isJockoMeditation ? (
-          <>
-            <div className="office-meditation-board">YOGA // STILLNESS // RECOVERY</div>
-            <div className="office-wall-frame office-wall-frame--zen" />
-            <div className="office-rug office-rug--zen" />
-          </>
-        ) : null}
-
-        <div className={`office-agent office-agent--${room} office-agent--${seat.visualState} office-agent--${seat.status === 'blocked' ? 'offline' : 'online'}`}>
-          <div className="office-agent__aura" />
-          <div className={`office-portrait office-portrait--${room} office-portrait--${seat.visualState} office-portrait--${seat.status === 'blocked' ? 'offline' : 'online'}`}>
-            <div className="office-portrait__shadow" />
-            <div className="office-portrait__ring">
-              <div className="office-portrait__frame">
-                <img
-                  src={room === 'elon' ? '/agents/elon.jpg' : '/agents/jocko.jpg'}
-                  alt={room === 'elon' ? 'Elon' : 'Jocko'}
-                  className="office-portrait__img"
-                />
-              </div>
-            </div>
-            {room === 'elon' ? <div className="office-portrait__chip office-portrait__chip--elon">OPS</div> : null}
-            {room === 'jocko' && seat.visualState === 'meditation' ? <div className="office-portrait__chip office-portrait__chip--zen">ZEN</div> : null}
-            {room === 'jocko' && seat.visualState !== 'meditation' ? <div className="office-portrait__chip office-portrait__chip--jocko">DISCIPLINE</div> : null}
-          </div>
-          <div className="office-agent__label">{capitalize(seat.agentId)}</div>
-        </div>
-
-        {seat.latestMemory ? <div className="office-note-bubble">Mémoire mise à jour</div> : null}
-        {seat.blockedTasks > 0 ? <div className="office-warning-badge">⚠ {seat.blockedTasks}</div> : null}
-      </div>
-    </section>
+    <div className={`ops-metric-pill tone-${tone}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
   );
 }
 
-function CentralHub({ seats }: { seats: OfficeRadarItem[] }) {
-  const onlineCount = seats.filter((seat) => seat.status !== 'blocked').length;
-  const criticalCount = seats.filter((seat) => seat.visualState === 'critical').length;
-  const activeCount = seats.filter((seat) => seat.visualState === 'working').length;
-
+function MiniInfo({ label, value, tone }: { label: string; value: string; tone?: 'error' }) {
   return (
-    <section className={`office-room office-room--hub ${criticalCount ? 'office-state--critical' : 'office-state--online'}`}>
-      <div className="office-room__topbar">
-        <span className="office-room__name">Hub central</span>
-        <span className="badge">{criticalCount ? 'sous tension' : 'stable'}</span>
-      </div>
-      <div className="office-room__decor office-room__decor--hub">
-        <div className="office-hub-banner">{onlineCount}/{seats.length} agents online</div>
-        <div className="office-hub-console" />
-        <div className="office-hub-monitor office-hub-monitor--1" />
-        <div className="office-hub-monitor office-hub-monitor--2" />
-        <div className="office-hub-monitor office-hub-monitor--3" />
-        <div className="office-rug office-rug--hub" />
-        <div className="office-server-rack office-server-rack--1" />
-        <div className="office-server-rack office-server-rack--2" />
-        <div className="office-agent office-agent--hub office-agent--online">
-          <div className="office-agent__aura" />
-          <div className="office-core-avatar">
-            <div className="office-core-avatar__ring" />
-            <div className="office-core-avatar__orb" />
-          </div>
-          <div className="office-agent__label">Core</div>
-        </div>
-        <div className="office-hub-stats">
-          <span className="office-pill">Actifs : {activeCount}</span>
-          <span className="office-pill">Critiques : {criticalCount}</span>
-        </div>
-      </div>
-    </section>
+    <div className={`ops-mini-info ${tone ? `tone-${tone}` : ''}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
   );
-}
-
-function AgentInspector({ seat }: { seat: OfficeRadarItem }) {
-  return (
-    <section className="card office-seat-card office-seat-card--inspector">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <div>
-          <h3 style={{ marginBottom: 4 }}>{seat.label}</h3>
-          <div className="muted">{capitalize(seat.agentId)} · {translateVisualState(seat.visualState)}</div>
-        </div>
-        <span className="badge">{seat.runtimeHealth || 'inconnue'}</span>
-      </div>
-
-      <div className="grid" style={{ gap: 8, marginTop: 10 }}>
-        <div className="muted">Tâches ouvertes : <strong style={{ color: 'var(--text)' }}>{seat.openTasks}</strong></div>
-        <div className="muted">Tâches bloquées : <strong style={{ color: 'var(--text)' }}>{seat.blockedTasks}</strong></div>
-        <div className="muted">Prochain cron : <strong style={{ color: 'var(--text)' }}>{seat.nextCron || 'Aucun'}</strong></div>
-        <div className="muted">Santé cron : <strong style={{ color: 'var(--text)' }}>{seat.cronHealth || 'inconnue'}</strong></div>
-        <div className="muted">Dernière mémoire : <strong style={{ color: 'var(--text)' }}>{seat.latestMemory || 'Aucune'}</strong></div>
-        <div className="muted">Dernière activité : <strong style={{ color: 'var(--text)' }}>{seat.sessionAge || 'inconnue'}</strong></div>
-        <div className="muted">Modèle : <strong style={{ color: 'var(--text)' }}>{seat.lastModel || 'inconnu'}</strong></div>
-        {seat.runtimeIssues?.length ? <div className="muted code">Runtime : {seat.runtimeIssues.join(' · ')}</div> : null}
-        {seat.cronIssues?.length ? <div className="muted code">Cron : {seat.cronIssues.join(' · ')}</div> : null}
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
-        <Link href={`/tasks?owner=${encodeURIComponent(capitalize(seat.agentId))}`} className="badge badge-link">Tâches</Link>
-        <Link href="/calendar" className="badge badge-link">Calendrier</Link>
-        <Link href={`/memory?agent=${encodeURIComponent(seat.agentId)}`} className="badge badge-link">Mémoire</Link>
-        <Link href="/team" className="badge badge-link">Diagnostic</Link>
-      </div>
-
-      <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <QuickTaskButton title={`Action ${capitalize(seat.agentId)}`} description={`Suivi bureau ${seat.label}`} owner={capitalize(seat.agentId)} />
-        <QuickTaskButton
-          title={`Intervention poste ${seat.label}`}
-          description={`Revue rapide du poste ${seat.label} et de son état runtime.`}
-          owner={capitalize(seat.agentId)}
-          label="Créer intervention"
-          doneLabel="Intervention créée"
-          className="action-button secondary-button"
-        />
-      </div>
-    </section>
-  );
-}
-
-function translateVisualState(state: string) {
-  if (state === 'working') return 'au travail';
-  if (state === 'scheduled') return 'en veille planifiée';
-  if (state === 'meditation') return 'méditation / yoga';
-  if (state === 'critical') return 'sous tension';
-  if (state === 'online') return 'présent';
-  return 'calme';
 }
 
 function capitalize(value: string) {

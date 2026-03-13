@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils/cn';
 
 const items = [
   { href: '/', label: 'Vue d’ensemble' },
-  { href: '/tasks', label: 'Tâches' },
   { href: '/calendar', label: 'Calendrier' },
   { href: '/memory', label: 'Mémoire' },
   { href: '/team', label: 'Équipe' },

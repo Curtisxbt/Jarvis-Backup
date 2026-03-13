@@ -1,5 +1,4 @@
 import { CronJobView } from '@/lib/cron/openclaw';
-import { TaskItem } from '@/lib/tasks/types';
 import { RuntimeSignal, findAgentRuntime } from '@/lib/agents/runtime';
 
 export type AlertLevel = 'danger' | 'warning' | 'info';
@@ -15,34 +14,17 @@ export interface AlertItem {
 }
 
 export function buildAlerts({
-  tasks,
   cronJobs,
   todaysElonMemory,
-  orphanCronCount,
   runtime,
 }: {
-  tasks: TaskItem[];
   cronJobs: CronJobView[];
   todaysElonMemory: boolean;
-  orphanCronCount: number;
   runtime: RuntimeSignal;
 }): AlertItem[] {
-  const blockedTasks = tasks.filter((task) => task.status === 'blocked');
   const noisyCrons = cronJobs.filter((job) => job.health !== 'ok');
   const alerts: AlertItem[] = [];
   const mainRuntime = findAgentRuntime(runtime, 'main');
-
-  if (blockedTasks.length) {
-    alerts.push({
-      level: 'danger',
-      label: 'Tâches bloquées',
-      detail: `${blockedTasks.length} tâche(s) nécessitent une résolution.`,
-      href: '/tasks?status=blocked',
-      cta: 'Ouvrir les tâches bloquées',
-      score: 100,
-      category: 'Exécution',
-    });
-  }
 
   if (noisyCrons.length) {
     const criticalCrons = noisyCrons.filter((job) => job.health === 'danger').length;
@@ -68,18 +50,6 @@ export function buildAlerts({
       cta: 'Ouvrir la mémoire Elon',
       score: 40,
       category: 'Mémoire',
-    });
-  }
-
-  if (orphanCronCount) {
-    alerts.push({
-      level: 'warning',
-      label: 'Cron orphelins',
-      detail: `${orphanCronCount} job(s) cron ne sont liés à aucune tâche.`,
-      href: '/calendar',
-      cta: 'Voir les cron orphelins',
-      score: 60,
-      category: 'Automatisation',
     });
   }
 
