@@ -53,6 +53,28 @@ Détecte d'abord ton agent depuis les métadonnées de session (ex: `agent:main`
 - Private memory stays in the current agent folder only.
 - Cross-agent information must be written to shared memory.
 
+## Skill Architecture (mandatory)
+
+Quand un skill local est créé ou maintenu dans ce workspace, utiliser l’architecture minimale suivante :
+
+```text
+skills/
+  <skill-name>/
+    SKILL.md
+    HISTORY.md
+```
+
+### Règles
+
+- `SKILL.md` = comportement actif du skill, description, workflow, contraintes.
+- `HISTORY.md` = incidents, tests réels, hypothèses invalidées, corrections, décisions.
+- Commencer **minimal** : ne pas créer d’autres fichiers tant qu’un besoin réel n’est pas apparu.
+- Préférer **un dossier par skill** plutôt qu’un journal centralisé multi-skills.
+- `SKILL.md` est la source active ; `HISTORY.md` sert de traçabilité et d’amélioration.
+- Si un test invalide une hypothèse, l’écrire dans `HISTORY.md` et corriger `SKILL.md`.
+- Ne pas mettre le protocole skill dans `TOOLS.md` : `TOOLS.md` reste réservé aux notes locales d’environnement.
+- Toute création de nouveau skill = demander l’accord explicite de Denis avant création des fichiers.
+
 ### Private
 - Long-term: `agents/<agent>/MEMORY.md`
 - Daily notes: `agents/<agent>/memory/YYYY-MM-DD.md`
