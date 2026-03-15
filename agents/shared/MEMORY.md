@@ -10,6 +10,7 @@ Ne pas y mettre les détails privés spécifiques à un seul agent.
 ## Références opératoires communes
 - Compte Google principal par défaut pour tous les services : **curtismusicrec@gmail.com**.
 - Protocole live update : annoncer le plan au début de chaque tâche complexe et éviter le silence prolongé (updates réguliers).
+- **2026-03-14** : le mode navigateur partagé OpenClaw `profile="user"` a été validé sur Jarvis avec le **vrai Chrome principal** (session réelle), après activation de `chrome://inspect/#remote-debugging` dans Chrome ; Google a pu être ouvert avec succès dans le navigateur principal.
 
 ## Contrainte familiale hebdomadaire (saison 2025-2026)
 - Mercredi 11:00–12:00 : Charly à la gym (Denis l'accompagne).
