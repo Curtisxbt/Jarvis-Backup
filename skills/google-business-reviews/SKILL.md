@@ -7,6 +7,27 @@ description: Read public Google reviews for Nuit Blanche Production from Google 
 
 Prefer the user’s real Chrome session (`profile="user"`), but do not depend on Google Business admin access when the request is only to read public reviews.
 
+## Preconditions
+
+- A browser must be available on Jarvis.
+- Public Google Search / knowledge panel access must load normally.
+- Google Business admin access is **not required** for public review reading.
+
+## Preferred entry points
+
+1. A direct public Google review URL provided by the user.
+2. A Google Search results page showing the local knowledge panel and public reviews.
+3. A generic public Google query for Nuit Blanche Production reviews.
+
+Avoid using `business.google.com` as the first entry point for this skill when the task is only to read public reviews.
+
+## Known failure modes
+
+- `business.google.com` opens the marketing / landing page instead of the real establishment review surface.
+- The browser may be connected to an unrelated Google account; this does not matter for public review reading.
+- Google may collapse or truncate some reviews, requiring “Voir tout l'avis” or “Afficher tous les avis”.
+- Search result layouts may shift, so the local review block may appear in different positions.
+
 ## Workflow
 
 1. Open the public Google Search / local reviews page for Nuit Blanche Production.
